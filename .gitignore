@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.log
+bun.lockb
+.astro/
+site/dist/
+site/.astro/
+.pagefind/
