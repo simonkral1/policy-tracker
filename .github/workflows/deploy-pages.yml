@@ -30,6 +30,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
@@ -40,11 +45,10 @@ jobs:
         working-directory: site
         run: bun install
 
-      # TODO(simon): set BASE_URL once the final Pages URL / path structure is
-      # decided (e.g. "/policy-tracker/" for project pages, "/" for a custom
-      # domain). Unset here so the astro config default of "/" is used.
       - name: Build site
         working-directory: site
+        env:
+          BASE_URL: /policy-tracker/
         run: bun run build
 
       - name: Upload Pages artifact
