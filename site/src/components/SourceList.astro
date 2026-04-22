@@ -1,0 +1,100 @@
+---
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import YAML from "yaml";
+
+interface Props {
+  file: string; // e.g., "newsletters.yaml"
+  label: string; // e.g., "Newsletters"
+  key: string; // the top-level array key inside the YAML (e.g., "newsletters", "venues", "targets", "people", "events")
+  columns?: Array<{ field: string; header: string }>; // optional column override
+}
+const { file, label, key, columns } = Astro.props;
+
+const defaultColumns = [
+  { field: "name", header: "Name" },
+  { field: "url", header: "URL" },
+  { field: "category", header: "Category" },
+  { field: "priority", header: "Priority" },
+  { field: "last_verified", header: "Last verified" },
+];
+const cols = columns ?? defaultColumns;
+
+interface SourceRow {
+  name?: string;
+  url?: string;
+  category?: string;
+  priority?: string | number;
+  last_verified?: string;
+  [key: string]: unknown;
+}
+
+// Resolve sources directory relative to the site/ cwd at build time:
+//   site/ -> ../sources
+const sourcesDir = resolve(process.cwd(), "..", "sources");
+const sourcesPath = resolve(sourcesDir, file);
+
+let rows: SourceRow[] = [];
+let loadError: string | null = null;
+
+if (existsSync(sourcesPath)) {
+  try {
+    const raw = readFileSync(sourcesPath, "utf8");
+    const parsed = YAML.parse(raw);
+    if (parsed && typeof parsed === "object" && Array.isArray((parsed as Record<string, unknown>)[key])) {
+      rows = (parsed as Record<string, SourceRow[]>)[key];
+    }
+  } catch (err) {
+    loadError = err instanceof Error ? err.message : String(err);
+  }
+}
+---
+
+<section class="source-section" aria-labelledby={`src-${file}`}>
+  <h2 id={`src-${file}`}>{label}</h2>
+
+  {
+    loadError && (
+      <p class="empty">Could not parse {file}: {loadError}</p>
+    )
+  }
+
+  {
+    !loadError && rows.length === 0 && (
+      <p class="empty">No sources listed in {file} yet.</p>
+    )
+  }
+
+  {
+    rows.length > 0 && (
+      <table class="sources-table">
+        <thead>
+          <tr>
+            {cols.map((c) => (
+              <th scope="col">{c.header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              {cols.map((c) => {
+                const value = row[c.field];
+                if (c.field === "url" && typeof value === "string") {
+                  return (
+                    <td>
+                      <a href={value} rel="noopener" target="_blank">
+                        {value}
+                      </a>
+                    </td>
+                  );
+                }
+                return <td>{value == null ? "—" : String(value)}</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+</section>

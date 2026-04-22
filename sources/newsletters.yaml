@@ -1,0 +1,207 @@
+version: 1
+updated: 2026-04-22
+newsletters:
+  # Core weekly reading — primary sources Chloé listed
+  - name: Transformer
+    url: https://www.transformernews.ai
+    rss: https://www.transformernews.ai/feed
+    category: ai-policy-analysis
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Shakeel Hashim's weekly AI news + analysis. Heavy on frontier-lab and policy overlap.
+
+  - name: GDM AI Policy Perspectives
+    url: https://www.aipolicyperspectives.com
+    rss: https://www.aipolicyperspectives.com/feed
+    category: ai-policy-analysis
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Google DeepMind's policy-team-facing writing.
+
+  - name: Anton Leicht
+    url: https://writing.antonleicht.me
+    rss: https://writing.antonleicht.me/feed
+    category: eu-policy
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: German perspective on EU AI policy, frequent AI Act analysis.
+
+  - name: Hyperdimensional
+    url: https://www.hyperdimensional.co
+    rss: https://www.hyperdimensional.co/feed
+    category: us-policy
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Dean Ball on US AI policy, executive actions, state legislation.
+
+  - name: Import AI
+    url: https://jack-clark.net
+    rss: https://jack-clark.net/feed/
+    category: frontier-model-news
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Jack Clark's long-running weekly. Technical + policy.
+
+  - name: Peter Wildeford
+    url: https://blog.peterwildeford.com
+    rss: https://blog.peterwildeford.com/feed
+    category: ai-policy-analysis
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: AI forecasting, policy.
+
+  - name: Epoch AI (Gradient Updates)
+    url: https://epochai.substack.com
+    rss: https://epochai.substack.com/feed
+    category: technical-safety
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Compute + capability forecasting. Weekly Gradient Updates newsletter.
+
+  - name: Dwarkesh Podcast
+    url: https://www.dwarkeshpatel.com
+    rss: https://www.dwarkeshpatel.com/feed
+    category: general-ai-news
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Long-form interviews with AI researchers and policy figures.
+
+  - name: EU AI Act Newsletter
+    url: https://artificialintelligenceact.substack.com
+    rss: https://artificialintelligenceact.substack.com/feed
+    category: eu-policy
+    language: en
+    priority: core
+    last_verified: 2026-04-22
+    notes: Tracks AI Act implementation, delegated acts, CoP updates.
+
+  # Secondary — scan, not always read
+  - name: Gary Marcus
+    url: https://garymarcus.substack.com
+    rss: https://garymarcus.substack.com/feed
+    category: general-ai-news
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Sceptical voice; useful for stress-testing claims from labs.
+
+  - name: 80,000 Hours Podcast
+    url: https://80000hours.org/podcast/
+    rss: https://80000hours.org/podcast/feed.xml
+    category: ai-policy-analysis
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Long-form interviews, often AI safety-adjacent.
+
+  - name: AI Futures Notes
+    url: https://aifuturesnotes.substack.com
+    rss: https://aifuturesnotes.substack.com/feed
+    category: technical-safety
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Zvi Mowshowitz
+    url: https://thezvi.substack.com
+    rss: https://thezvi.substack.com/feed
+    category: general-ai-news
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Comprehensive weekly roundups. Volume is high.
+
+  - name: CAIS AI Safety Newsletter
+    url: https://newsletter.safe.ai
+    rss: https://newsletter.safe.ai/feed
+    category: technical-safety
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Center for AI Safety's biweekly.
+
+  - name: Lawfare — AI
+    url: https://www.lawfaremedia.org/topic/artificial-intelligence
+    rss: https://www.lawfaremedia.org/topic/artificial-intelligence/feed
+    category: ai-policy-analysis
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Legal + national-security angle.
+
+  - name: CSET Newsletter
+    url: https://cset.georgetown.edu
+    rss: https://cset.georgetown.edu/feed
+    category: international
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: Georgetown CSET; policy research with a China + compute focus.
+
+  - name: Tech Policy Press
+    url: https://www.techpolicy.press
+    rss: https://www.techpolicy.press/rss
+    category: ai-policy-analysis
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Luiza Jarovsky — AI Governance
+    url: https://www.luizasnewsletter.com
+    rss: https://www.luizasnewsletter.com/feed
+    category: international
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: AI + data governance, often EU-adjacent.
+
+  - name: Miles Brundage
+    url: https://milesbrundage.substack.com
+    rss: https://milesbrundage.substack.com/feed
+    category: ai-policy-analysis
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Politico — AI Decoded
+    url: https://www.politico.eu/newsletter/ai-decoded/
+    rss: null
+    category: eu-policy
+    language: en
+    priority: secondary
+    last_verified: 2026-04-22
+    notes: EU policy daily; no public RSS — may need to fetch via archive page or subscribe with a shared address.
+
+  # Experimental — worth sampling; prune if low signal
+  - name: Stanford HAI News
+    url: https://hai.stanford.edu/news
+    rss: https://hai.stanford.edu/news/rss.xml
+    category: general-ai-news
+    language: en
+    priority: experimental
+    last_verified: 2026-04-22
+
+  - name: Future of Life Institute
+    url: https://futureoflife.org
+    rss: https://futureoflife.org/feed
+    category: technical-safety
+    language: en
+    priority: experimental
+    last_verified: 2026-04-22
+
+  - name: Alignment Forum (curated posts)
+    url: https://www.alignmentforum.org
+    rss: https://www.alignmentforum.org/feed.xml?view=curated-rss
+    category: technical-safety
+    language: en
+    priority: experimental
+    last_verified: 2026-04-22
+    notes: Only the curated feed, not firehose.

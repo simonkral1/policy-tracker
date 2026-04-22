@@ -1,0 +1,146 @@
+version: 1
+updated: 2026-04-22
+arxiv_categories:
+  - code: cs.AI
+    description: Artificial Intelligence (broad)
+    priority: secondary
+  - code: cs.CL
+    description: Computation and Language (LLMs live here)
+    priority: core
+  - code: cs.LG
+    description: Machine Learning
+    priority: core
+  - code: cs.CY
+    description: Computers and Society (policy-adjacent)
+    priority: core
+  - code: cs.CR
+    description: Cryptography and Security (model security, jailbreaks)
+    priority: secondary
+  - code: stat.ML
+    description: Statistical ML
+    priority: experimental
+venues:
+  - name: NeurIPS
+    url: https://neurips.cc
+    type: conference
+    priority: core
+    last_verified: 2026-04-22
+  - name: ICML
+    url: https://icml.cc
+    type: conference
+    priority: core
+    last_verified: 2026-04-22
+  - name: ICLR
+    url: https://iclr.cc
+    type: conference
+    priority: core
+    last_verified: 2026-04-22
+  - name: ACM FAccT
+    url: https://facctconference.org
+    type: conference
+    priority: core
+    last_verified: 2026-04-22
+    notes: Fairness, accountability, transparency — policy-relevant.
+  - name: AAAI AIES
+    url: https://www.aies-conference.com
+    type: conference
+    priority: secondary
+    last_verified: 2026-04-22
+  - name: Alignment Forum
+    url: https://www.alignmentforum.org
+    type: forum
+    priority: core
+    last_verified: 2026-04-22
+  - name: OpenReview (watchlist)
+    url: https://openreview.net
+    type: preprint
+    priority: secondary
+    last_verified: 2026-04-22
+  - name: METR Reports
+    url: https://metr.org/research
+    type: preprint
+    priority: core
+    last_verified: 2026-04-22
+    notes: Model evaluations with direct policy relevance.
+  - name: Apollo Research
+    url: https://www.apolloresearch.ai/research
+    type: preprint
+    priority: core
+    last_verified: 2026-04-22
+  - name: Anthropic Research
+    url: https://www.anthropic.com/research
+    type: preprint
+    priority: core
+    last_verified: 2026-04-22
+  - name: Google DeepMind Publications
+    url: https://deepmind.google/research/publications
+    type: preprint
+    priority: core
+    last_verified: 2026-04-22
+  - name: OpenAI Research
+    url: https://openai.com/research
+    type: preprint
+    priority: core
+    last_verified: 2026-04-22
+tracked_authors:
+  - name: Yoshua Bengio
+    affiliation: MILA
+    priority: core
+    notes: Chair of International AI Safety Report.
+  - name: Stuart Russell
+    affiliation: UC Berkeley CHAI
+    priority: core
+  - name: Dan Hendrycks
+    affiliation: CAIS
+    priority: core
+  - name: Paul Christiano
+    affiliation: US AISI / ARC
+    priority: core
+  - name: Beth Barnes
+    affiliation: METR
+    priority: core
+  - name: Geoffrey Irving
+    affiliation: UK AISI
+    priority: core
+  - name: David Krueger
+    affiliation: Cambridge
+    priority: core
+  - name: Richard Ngo
+    affiliation: OpenAI
+    priority: core
+  - name: Alex Turner
+    affiliation: Google DeepMind
+    priority: secondary
+  - name: Owain Evans
+    affiliation: Truthful AI
+    priority: secondary
+  - name: Jan Leike
+    affiliation: Anthropic
+    priority: core
+  - name: Iason Gabriel
+    affiliation: Google DeepMind
+    priority: core
+    notes: Ethics + governance writing.
+  - name: Helen Toner
+    affiliation: Georgetown CSET
+    priority: core
+keywords:
+  - frontier model evaluation
+  - dangerous capabilities
+  - AI safety institute
+  - model organism of misalignment
+  - scalable oversight
+  - interpretability
+  - deceptive alignment
+  - liability
+  - compute governance
+  - international coordination
+  - responsible scaling policy
+  - safety case
+  - pre-deployment evaluation
+  - red teaming
+  - AI Act General-Purpose AI
+  - systemic risk
+  - model weights security
+  - code of practice
+  - trilogue

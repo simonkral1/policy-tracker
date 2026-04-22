@@ -1,0 +1,57 @@
+name: deploy-pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "content/**"
+      - "sources/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Pages recommends not cancelling an in-flight deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: build-and-deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install root dependencies
+        run: bun install
+
+      - name: Install site dependencies
+        working-directory: site
+        run: bun install
+
+      # TODO(simon): set BASE_URL once the final Pages URL / path structure is
+      # decided (e.g. "/policy-tracker/" for project pages, "/" for a custom
+      # domain). Unset here so the astro config default of "/" is used.
+      - name: Build site
+        working-directory: site
+        run: bun run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

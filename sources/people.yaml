@@ -1,0 +1,67 @@
+version: 1
+updated: 2026-04-22
+people:
+  - name: METR Evals
+    handle: METR_Evals
+    platform: twitter-x
+    url: https://x.com/METR_Evals
+    priority: core
+    notes: Model evaluations org; post notable capability / safety results.
+
+  - name: Helen Toner
+    handle: hlntnr
+    platform: twitter-x
+    url: https://x.com/hlntnr
+    affiliation: Georgetown CSET
+    priority: core
+
+  - name: Yoshua Bengio
+    handle: Yoshua_Bengio
+    platform: twitter-x
+    url: https://x.com/Yoshua_Bengio
+    affiliation: MILA
+    priority: core
+    notes: International AI Safety Report chair.
+
+  - name: UK AISI
+    handle: AISafetyInst
+    platform: twitter-x
+    url: https://x.com/AISafetyInst
+    priority: core
+
+  - name: US AISI (NIST)
+    handle: usaisi
+    platform: twitter-x
+    url: https://x.com/usaisi
+    priority: core
+
+  - name: Dan Hendrycks
+    handle: DanHendrycks
+    platform: twitter-x
+    url: https://x.com/DanHendrycks
+    affiliation: CAIS
+    priority: core
+
+  - name: Apollo Research
+    handle: apolloaisafety
+    platform: twitter-x
+    url: https://x.com/apolloaisafety
+    priority: core
+
+  - name: Anthropic Policy
+    handle: AnthropicAI
+    platform: twitter-x
+    url: https://x.com/AnthropicAI
+    priority: secondary
+
+  - name: EU AI Office
+    handle: EU_AIOffice
+    platform: twitter-x
+    url: https://x.com/EU_AIOffice
+    priority: core
+
+  - name: OECD AI
+    handle: OECD_AI
+    platform: twitter-x
+    url: https://x.com/OECD_AI
+    priority: secondary

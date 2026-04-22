@@ -1,0 +1,16 @@
+---
+interface Props {
+  type: "legislative" | "newsletter" | "papers";
+}
+const { type } = Astro.props;
+
+const labels: Record<Props["type"], string> = {
+  legislative: "Legislative",
+  newsletter: "Newsletter",
+  papers: "Papers",
+};
+---
+
+<span class={`chip chip--${type}`} aria-label={`Digest type: ${labels[type]}`}>
+  {labels[type]}
+</span>

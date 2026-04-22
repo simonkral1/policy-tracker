@@ -1,0 +1,200 @@
+version: 1
+updated: 2026-04-22
+targets:
+  # EU — executive + legislature + regulator
+  - name: EC Have Your Say portal
+    url: https://ec.europa.eu/info/law/better-regulation/have-your-say
+    jurisdiction: EU
+    body_type: portal
+    priority: core
+    last_verified: 2026-04-22
+    search_hints:
+      - 'site:ec.europa.eu/info/law/better-regulation "have-your-say" AI'
+      - '"have your say" European Commission AI consultation open'
+    notes: Primary source for EC consultation deadlines. Must be searched every week.
+
+  - name: EP AIDA Committee
+    url: https://www.europarl.europa.eu/committees/en/aida/home
+    jurisdiction: EU
+    body_type: legislature
+    priority: core
+    last_verified: 2026-04-22
+    search_hints:
+      - EP AIDA agenda hearings
+      - EP AIDA committee meeting
+    notes: AI in a Digital Age committee.
+
+  - name: EP IMCO Committee
+    url: https://www.europarl.europa.eu/committees/en/imco/home
+    jurisdiction: EU
+    body_type: legislature
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: EP LIBE Committee
+    url: https://www.europarl.europa.eu/committees/en/libe/home
+    jurisdiction: EU
+    body_type: legislature
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: EP JURI Committee
+    url: https://www.europarl.europa.eu/committees/en/juri/home
+    jurisdiction: EU
+    body_type: legislature
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: EU AI Office
+    url: https://digital-strategy.ec.europa.eu/en/policies/ai-office
+    jurisdiction: EU
+    body_type: regulator
+    priority: core
+    last_verified: 2026-04-22
+    search_hints:
+      - "AI Act delegated regulation"
+      - "AI Act implementing act"
+      - "AI Act Article 92"
+      - "AI Act Article 101"
+      - "GPAI evaluation proceedings"
+      - "GPAI Code of Practice"
+    notes: Watch for delegated/implementing acts, codes of practice updates.
+
+  # UK
+  - name: UK DSIT
+    url: https://www.gov.uk/government/organisations/department-for-science-innovation-and-technology
+    jurisdiction: UK
+    body_type: executive
+    priority: core
+    last_verified: 2026-04-22
+    notes: Department for Science, Innovation and Technology.
+
+  - name: UK AI Safety Institute
+    url: https://www.aisi.gov.uk
+    jurisdiction: UK
+    body_type: regulator
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: UK ICO
+    url: https://ico.org.uk
+    jurisdiction: UK
+    body_type: regulator
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: UK Parliament AI Bills tracker
+    url: https://bills.parliament.uk
+    jurisdiction: UK
+    body_type: legislature
+    priority: core
+    last_verified: 2026-04-22
+    search_hints:
+      - UK AI Regulation Bill
+      - Data Use and Access Bill
+
+  # US
+  - name: US AI Safety Institute (NIST)
+    url: https://www.nist.gov/aisi
+    jurisdiction: US
+    body_type: regulator
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: US White House OSTP
+    url: https://www.whitehouse.gov/ostp
+    jurisdiction: US
+    body_type: executive
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: US Congress (AI-related bills)
+    url: https://www.congress.gov
+    jurisdiction: US
+    body_type: legislature
+    priority: secondary
+    last_verified: 2026-04-22
+
+  # Intergovernmental
+  - name: OECD.AI
+    url: https://oecd.ai
+    jurisdiction: OECD
+    body_type: intergovernmental
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: Council of Europe — AI Convention Committee
+    url: https://www.coe.int/en/web/artificial-intelligence
+    jurisdiction: Council of Europe
+    body_type: intergovernmental
+    priority: core
+    last_verified: 2026-04-22
+
+  - name: UN IGF
+    url: https://www.intgovforum.org
+    jurisdiction: UN
+    body_type: intergovernmental
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: ITU — AI for Good
+    url: https://aiforgood.itu.int
+    jurisdiction: UN
+    body_type: intergovernmental
+    priority: secondary
+    last_verified: 2026-04-22
+
+  # G7 — national tracks
+  - name: France — CNIL / SGDSN AI
+    url: https://www.cnil.fr
+    jurisdiction: France
+    body_type: regulator
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Germany — BSI AI
+    url: https://www.bsi.bund.de
+    jurisdiction: Germany
+    body_type: regulator
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Japan — METI AI policy
+    url: https://www.meti.go.jp
+    jurisdiction: Japan
+    body_type: executive
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: Canada — ISED AI policy
+    url: https://ised-isde.canada.ca
+    jurisdiction: Canada
+    body_type: executive
+    priority: secondary
+    last_verified: 2026-04-22
+
+  # Funding programmes relevant to safe-by-design agenda
+  - name: Horizon Europe — open calls
+    url: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search
+    jurisdiction: EU
+    body_type: portal
+    priority: core
+    last_verified: 2026-04-22
+    search_hints:
+      - Horizon Europe trustworthy AI call
+      - Horizon Europe AI safety
+    notes: Grant calls with AI / trustworthy AI topics.
+
+  - name: European Competitiveness Fund
+    url: https://commission.europa.eu
+    jurisdiction: EU
+    body_type: portal
+    priority: secondary
+    last_verified: 2026-04-22
+
+  - name: GenAI4EU
+    url: https://digital-strategy.ec.europa.eu/en/policies/genai4eu
+    jurisdiction: EU
+    body_type: portal
+    priority: secondary
+    last_verified: 2026-04-22

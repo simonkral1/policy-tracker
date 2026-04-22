@@ -1,0 +1,72 @@
+name: rss-check
+
+on:
+  schedule:
+    # Mondays 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  rss-check:
+    name: rss-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Verify RSS feeds (JSON)
+        id: verify
+        run: |
+          set +e
+          bun run verify:rss --json > rss-report.json
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          set -e
+
+      - name: Summarise report
+        if: always()
+        run: |
+          if [ -f rss-report.json ]; then
+            echo '### RSS verification report' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat rss-report.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Open issue on failure
+        if: steps.verify.outputs.exit_code != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const date = new Date().toISOString().slice(0, 10);
+            let reportBlock = '';
+            try {
+              const raw = fs.readFileSync('rss-report.json', 'utf8');
+              reportBlock = '\n\n```json\n' + raw + '\n```\n';
+            } catch (e) {
+              reportBlock = '\n\n_(no rss-report.json produced)_\n';
+            }
+            const body = [
+              'RSS verification dropped below the 80% threshold on the weekly check.',
+              '',
+              'Run: ' + `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              reportBlock,
+              'Check each failing feed — likely causes: renamed/moved feed URL, publisher removed RSS, transient 5xx.',
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `RSS verification failed — ${date}`,
+              body,
+              labels: ['rss', 'maintenance'],
+            });

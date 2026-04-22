@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SourceList from "../components/SourceList.astro";
+---
+
+<BaseLayout
+  title="Sources — Policy Tracker"
+  description="The full list of newsletters, papers, legislative feeds, and people that SaferAI monitors."
+>
+  <section class="hero">
+    <h1>Sources</h1>
+    <p class="tagline">
+      What we monitor to produce these digests. Each list is curated by the
+      SaferAI policy team and verified on a rolling basis.
+    </p>
+  </section>
+
+  <section class="prose">
+    <p>
+      Digests are assembled from four source lists. Priority and last-verified
+      dates come directly from the YAML files checked into the repository, so
+      this page always reflects the current monitoring set.
+    </p>
+
+    <SourceList file="newsletters.yaml" label="Newsletters" key="newsletters" />
+
+    <SourceList
+      file="papers.yaml"
+      label="Paper venues"
+      key="venues"
+      columns={[
+        { field: "name", header: "Venue" },
+        { field: "url", header: "URL" },
+        { field: "type", header: "Type" },
+        { field: "priority", header: "Priority" },
+        { field: "last_verified", header: "Last verified" },
+      ]}
+    />
+
+    <SourceList
+      file="papers.yaml"
+      label="Tracked authors"
+      key="tracked_authors"
+      columns={[
+        { field: "name", header: "Author" },
+        { field: "affiliation", header: "Affiliation" },
+        { field: "priority", header: "Priority" },
+        { field: "notes", header: "Notes" },
+      ]}
+    />
+
+    <SourceList
+      file="papers.yaml"
+      label="arXiv categories"
+      key="arxiv_categories"
+      columns={[
+        { field: "code", header: "Code" },
+        { field: "description", header: "Description" },
+        { field: "priority", header: "Priority" },
+      ]}
+    />
+
+    <SourceList
+      file="legislative.yaml"
+      label="Legislative feeds"
+      key="targets"
+      columns={[
+        { field: "name", header: "Name" },
+        { field: "url", header: "URL" },
+        { field: "jurisdiction", header: "Jurisdiction" },
+        { field: "body_type", header: "Body type" },
+        { field: "priority", header: "Priority" },
+      ]}
+    />
+
+    <SourceList
+      file="people.yaml"
+      label="People"
+      key="people"
+      columns={[
+        { field: "name", header: "Name" },
+        { field: "handle", header: "Handle" },
+        { field: "platform", header: "Platform" },
+        { field: "url", header: "URL" },
+        { field: "affiliation", header: "Affiliation" },
+        { field: "priority", header: "Priority" },
+      ]}
+    />
+
+    <SourceList
+      file="events.yaml"
+      label="Tracked events"
+      key="events"
+      columns={[
+        { field: "date", header: "Date" },
+        { field: "name", header: "Event" },
+        { field: "organiser", header: "Organiser" },
+        { field: "url", header: "URL" },
+        { field: "jurisdiction", header: "Jurisdiction" },
+      ]}
+    />
+  </section>
+</BaseLayout>

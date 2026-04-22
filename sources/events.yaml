@@ -1,0 +1,15 @@
+version: 1
+updated: 2026-04-22
+events: []
+# This file tracks known future events (hearings, summits, consultation deadlines)
+# that we want the legislative-digest Routine to surface. Populated as events are
+# identified; normally written by humans, read by Routines.
+#
+# Example entry:
+#
+# - name: EP AIDA hearing on GPAI Codes of Practice
+#   organiser: European Parliament AIDA Committee
+#   url: https://www.europarl.europa.eu/committees/en/aida/...
+#   date: 2026-05-14
+#   jurisdiction: EU
+#   notes: Topic of interest — CoP scope discussion.

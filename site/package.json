@@ -1,0 +1,22 @@
+{
+  "name": "policy-tracker-site",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "bun run scripts/import-content.ts && astro build && bunx pagefind --site dist",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "latest",
+    "@astrojs/sitemap": "latest",
+    "pagefind": "latest",
+    "yaml": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/node": "latest"
+  }
+}

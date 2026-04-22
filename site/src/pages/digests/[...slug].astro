@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TypeChip from "../../components/TypeChip.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+type AnyDigest =
+  | CollectionEntry<"legislative">
+  | CollectionEntry<"newsletter">
+  | CollectionEntry<"papers">;
+
+export async function getStaticPaths() {
+  const [legislative, newsletter, papers] = await Promise.all([
+    getCollection("legislative"),
+    getCollection("newsletter"),
+    getCollection("papers"),
+  ]);
+
+  const all: AnyDigest[] = [...legislative, ...newsletter, ...papers];
+
+  return all.map((entry) => ({
+    params: { slug: `${entry.data.type}/${entry.id}` },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: AnyDigest;
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const base = import.meta.env.BASE_URL || "/";
+function withBase(path: string): string {
+  const b = base.endsWith("/") ? base.slice(0, -1) : base;
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${b}${p}` || "/";
+}
+
+const dateObj = new Date(entry.data.date);
+const dateLabel = dateObj.toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+const dateIso = dateObj.toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.editor_note ?? `AI-policy digest for ${dateLabel}.`}
+>
+  <a class="back-link" href={withBase("/archive")}>← back to archive</a>
+
+  <article class="prose">
+    <header>
+      <div class="meta" style="display:flex;gap:.6rem;align-items:center;margin-bottom:.5rem;">
+        <time datetime={dateIso}>{dateLabel}</time>
+        <TypeChip type={entry.data.type} />
+      </div>
+      <h1>{entry.data.title}</h1>
+      {
+        entry.data.period_start && entry.data.period_end && (
+          <p style="color:var(--text-muted);font-family:var(--font-sans);margin-top:-0.25rem;">
+            Covering {new Date(entry.data.period_start).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+            })}{" – "}
+            {new Date(entry.data.period_end).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+            {entry.data.sources_cited && <> · {entry.data.sources_cited} sources</>}
+          </p>
+        )
+      }
+    </header>
+
+    <Content />
+  </article>
+
+  <a class="back-link" href={withBase("/archive")}>← back to archive</a>
+</BaseLayout>

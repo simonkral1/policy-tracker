@@ -1,0 +1,108 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DigestCard from "../components/DigestCard.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+const base = import.meta.env.BASE_URL || "/";
+function withBase(path: string): string {
+  const b = base.endsWith("/") ? base.slice(0, -1) : base;
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${b}${p}` || "/";
+}
+
+const [legislative, newsletter, papers] = await Promise.all([
+  getCollection("legislative"),
+  getCollection("newsletter"),
+  getCollection("papers"),
+]);
+
+function byDateDesc<T extends { data: { date: Date } }>(a: T, b: T): number {
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+}
+
+const sortedLegislative = [...legislative].sort(byDateDesc);
+const sortedNewsletter = [...newsletter].sort(byDateDesc);
+const sortedPapers = [...papers].sort(byDateDesc);
+
+const latestLegislative = sortedLegislative[0];
+const latestNewsletter = sortedNewsletter[0];
+const latestPapers = sortedPapers[0];
+
+// Parse "ACT NOW" section from most recent legislative digest.
+function extractTopThree(
+  entry: CollectionEntry<"legislative"> | undefined,
+): string[] {
+  if (!entry?.body) return [];
+  // Split on the ACT NOW heading. Tolerate variations in emoji/whitespace.
+  const actNowRe = /^##\s*(?:🔴\s*)?ACT\s*NOW\s*$/im;
+  const parts = entry.body.split(actNowRe);
+  if (parts.length < 2) return [];
+  const after = parts[1];
+  // Cut at the next level-2 heading.
+  const nextHeadingIdx = after.search(/^##\s+/m);
+  const section = nextHeadingIdx === -1 ? after : after.slice(0, nextHeadingIdx);
+  // Pull the first three "### " headings.
+  const headingRe = /^###\s+(.+?)\s*$/gm;
+  const titles: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = headingRe.exec(section)) !== null && titles.length < 3) {
+    titles.push(m[1].replace(/\s+/g, " ").trim());
+  }
+  return titles;
+}
+
+const topThree = extractTopThree(latestLegislative);
+const fallbackNote = latestLegislative?.data.editor_note ?? null;
+const hasAnyDigest = Boolean(latestLegislative || latestNewsletter || latestPapers);
+
+const latestCards = [latestLegislative, latestNewsletter, latestPapers].filter(
+  Boolean,
+) as Array<CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers">>;
+---
+
+<BaseLayout title="SaferAI Policy Tracker" description="Weekly digests of global AI-policy activity, curated by SaferAI.">
+  <section class="hero">
+    <h1>SaferAI Policy Tracker</h1>
+    <p class="tagline">
+      Weekly reading on legislative, research, and newsletter signals in global
+      AI policy — curated by the SaferAI policy team.
+    </p>
+  </section>
+
+  <section aria-labelledby="top-three-heading">
+    <div class="top-three">
+      <h2 id="top-three-heading">Top 3 this week</h2>
+      {
+        topThree.length > 0 ? (
+          <ol>
+            {topThree.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ol>
+        ) : fallbackNote ? (
+          <p>{fallbackNote}</p>
+        ) : (
+          <p class="empty">
+            No digests yet — the first will appear after the Routines run.
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    hasAnyDigest && (
+      <section aria-labelledby="latest-heading">
+        <h2 id="latest-heading">Latest digests</h2>
+        <div class="card-grid card-grid--three">
+          {latestCards.map((entry) => (
+            <DigestCard entry={entry} />
+          ))}
+        </div>
+        <p style="margin-top:1rem;">
+          <a href={withBase("/archive")}>Browse the full archive →</a>
+        </p>
+      </section>
+    )
+  }
+</BaseLayout>

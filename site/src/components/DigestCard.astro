@@ -1,0 +1,65 @@
+---
+import TypeChip from "./TypeChip.astro";
+import type { CollectionEntry } from "astro:content";
+
+type AnyDigest =
+  | CollectionEntry<"legislative">
+  | CollectionEntry<"newsletter">
+  | CollectionEntry<"papers">;
+
+interface Props {
+  entry: AnyDigest;
+}
+
+const { entry } = Astro.props;
+const { data, id, body } = entry;
+
+const base = import.meta.env.BASE_URL || "/";
+function withBase(path: string): string {
+  const b = base.endsWith("/") ? base.slice(0, -1) : base;
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${b}${p}` || "/";
+}
+
+const dateObj = new Date(data.date);
+const dateLabel = dateObj.toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+const dateIso = dateObj.toISOString().slice(0, 10);
+
+function stripMarkdown(md: string): string {
+  return md
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*+]\s+/gm, "")
+    .replace(/^\s*>\s?/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/_([^_]+)_/g, "$1")
+    .replace(/\|/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const rawTeaser = data.editor_note ?? stripMarkdown(body ?? "");
+const teaser =
+  rawTeaser.length > 200 ? `${rawTeaser.slice(0, 197).trimEnd()}…` : rawTeaser;
+
+const href = `${withBase(`/digests/${data.type}/${id}`)}?from=digest&date=${dateIso}`;
+---
+
+<article class="card" data-type={data.type} data-date={dateIso}>
+  <div class="meta">
+    <time datetime={dateIso}>{dateLabel}</time>
+    <TypeChip type={data.type} />
+  </div>
+  <h3>
+    <a href={href}>{data.title}</a>
+  </h3>
+  {teaser && <p class="teaser">{teaser}</p>}
+</article>

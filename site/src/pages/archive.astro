@@ -1,0 +1,117 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DigestCard from "../components/DigestCard.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+const base = import.meta.env.BASE_URL || "/";
+
+const [legislative, newsletter, papers] = await Promise.all([
+  getCollection("legislative"),
+  getCollection("newsletter"),
+  getCollection("papers"),
+]);
+
+type AnyDigest =
+  | CollectionEntry<"legislative">
+  | CollectionEntry<"newsletter">
+  | CollectionEntry<"papers">;
+
+const all: AnyDigest[] = [...legislative, ...newsletter, ...papers].sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const filters = [
+  { id: "all", label: "All" },
+  { id: "legislative", label: "Legislative" },
+  { id: "newsletter", label: "Newsletter" },
+  { id: "papers", label: "Papers" },
+];
+
+// Pagefind UI script path (served from /pagefind/ after `bunx pagefind --site dist`)
+const pagefindJs = `${base.endsWith("/") ? base : `${base}/`}pagefind/pagefind-ui.js`;
+const pagefindCss = `${base.endsWith("/") ? base : `${base}/`}pagefind/pagefind-ui.css`;
+---
+
+<BaseLayout title="Archive — Policy Tracker" description="All digests, filterable and searchable.">
+  <section class="hero">
+    <h1>Archive</h1>
+    <p class="tagline">Every digest, newest first. Filter by type or search full text.</p>
+  </section>
+
+  <div class="filter-chips" role="group" aria-label="Filter digests by type">
+    {
+      filters.map((f, i) => (
+        <button
+          type="button"
+          class="filter-chip"
+          data-filter={f.id}
+          aria-pressed={i === 0 ? "true" : "false"}
+        >
+          {f.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="search-wrap">
+    <link rel="stylesheet" href={pagefindCss} />
+    <div id="search"></div>
+  </div>
+
+  {
+    all.length === 0 ? (
+      <p class="empty">No digests yet. Check back after the next Routine run.</p>
+    ) : (
+      <div class="card-grid card-grid--three" id="archive-grid">
+        {all.map((entry) => (
+          <DigestCard entry={entry} />
+        ))}
+      </div>
+    )
+  }
+
+  <script is:inline define:vars={{ pagefindJs }}>
+    // Filter-chip toggling (progressive enhancement).
+    (function () {
+      const chips = document.querySelectorAll(".filter-chip");
+      const grid = document.getElementById("archive-grid");
+      if (!grid) return;
+      const cards = Array.from(grid.querySelectorAll("[data-type]"));
+
+      function apply(filter) {
+        cards.forEach((el) => {
+          const t = el.getAttribute("data-type");
+          const show = filter === "all" || t === filter;
+          el.style.display = show ? "" : "none";
+        });
+        chips.forEach((c) => {
+          c.setAttribute(
+            "aria-pressed",
+            c.getAttribute("data-filter") === filter ? "true" : "false",
+          );
+        });
+      }
+
+      chips.forEach((c) => {
+        c.addEventListener("click", () => {
+          apply(c.getAttribute("data-filter") || "all");
+        });
+      });
+    })();
+
+    // Pagefind UI (loaded only if the bundle was generated at build time).
+    (function () {
+      const el = document.getElementById("search");
+      if (!el) return;
+      import(pagefindJs)
+        .then((mod) => {
+          const PagefindUI = mod.PagefindUI || (mod.default && mod.default.PagefindUI);
+          if (!PagefindUI) return;
+          new PagefindUI({ element: "#search", showSubResults: true });
+        })
+        .catch(() => {
+          // Pagefind bundle missing (e.g., during `astro dev`); silently skip.
+        });
+    })();
+  </script>
+</BaseLayout>

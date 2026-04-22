@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Policy Tracker">
+  <rect x="1" y="1" width="30" height="30" rx="7" ry="7" fill="#6b4b7a"/>
+  <g fill="none" stroke="#fbfaf7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 9v14"/>
+    <path d="M9 9h5a3.2 3.2 0 0 1 0 6.4H9"/>
+    <path d="M18 11h6"/>
+    <path d="M21 11v12"/>
+  </g>
+</svg>
