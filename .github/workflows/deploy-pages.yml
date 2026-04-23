@@ -7,6 +7,9 @@ on:
       - "site/**"
       - "content/**"
       - "sources/**"
+  workflow_run:
+    workflows: [auto-merge]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -22,6 +25,11 @@ concurrency:
 jobs:
   build-and-deploy:
     name: build-and-deploy
+    # For workflow_run triggers, only run when the upstream auto-merge succeeded.
+    # Other triggers (push, workflow_dispatch) always run.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
