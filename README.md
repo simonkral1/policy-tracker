@@ -16,7 +16,7 @@ Each week, three Routines run on Anthropic's cloud. They clone this repo, summar
 ## Quickstart (for SaferAI teammates)
 
 1. **Read the latest digest** at the site URL (bookmark it).
-2. **Subscribe** — until we add email/RSS, bookmark the site and open it on Monday.
+2. **Subscribe** — either bookmark the site or enable the optional email-update flow in [`docs/EMAIL-DELIVERY.md`](docs/EMAIL-DELIVERY.md).
 3. **Request a source be added** — open an issue, or edit `sources/newsletters.yaml` and open a PR.
 
 ## Quickstart (for the tracker owner)
@@ -43,6 +43,7 @@ Full setup is in [`docs/SETUP.md`](docs/SETUP.md). Short version:
 - [Architecture](docs/ARCHITECTURE.md) — why Routines, why Astro, the end-to-end flow.
 - [Setup](docs/SETUP.md) — creating the repo, installing the Claude GitHub App, DNS.
 - [Routine Setup](docs/ROUTINE-SETUP.md) — step-by-step for each of the three Routines.
+- [Email Delivery](docs/EMAIL-DELIVERY.md) — send an email whenever new digest content lands on `main`.
 - [Migration](docs/MIGRATION.md) — moving ownership from an individual seat to a service seat.
 - [Consuming](docs/CONSUMING.md) — how teammates use the tracker day-to-day.
 

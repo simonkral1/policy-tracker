@@ -1,0 +1,121 @@
+name: email-digest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+  workflow_dispatch:
+    inputs:
+      files:
+        description: "Optional comma- or newline-separated digest paths under content/"
+        required: false
+        type: string
+      dry_run:
+        description: "Build the email without sending it"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+
+jobs:
+  email-digest:
+    name: email-digest
+    if: ${{ vars.POLICY_TRACKER_EMAIL_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    env:
+      POLICY_TRACKER_SITE_URL: ${{ vars.POLICY_TRACKER_SITE_URL }}
+      POLICY_TRACKER_SMTP_HOST: ${{ secrets.POLICY_TRACKER_SMTP_HOST }}
+      POLICY_TRACKER_SMTP_PORT: ${{ secrets.POLICY_TRACKER_SMTP_PORT }}
+      POLICY_TRACKER_SMTP_SECURE: ${{ secrets.POLICY_TRACKER_SMTP_SECURE }}
+      POLICY_TRACKER_SMTP_USER: ${{ secrets.POLICY_TRACKER_SMTP_USER }}
+      POLICY_TRACKER_SMTP_PASS: ${{ secrets.POLICY_TRACKER_SMTP_PASS }}
+      POLICY_TRACKER_EMAIL_FROM: ${{ secrets.POLICY_TRACKER_EMAIL_FROM }}
+      POLICY_TRACKER_EMAIL_TO: ${{ secrets.POLICY_TRACKER_EMAIL_TO }}
+      POLICY_TRACKER_EMAIL_REPLY_TO: ${{ secrets.POLICY_TRACKER_EMAIL_REPLY_TO }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Determine digest files
+        id: changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          INPUT_FILES: ${{ inputs.files }}
+        run: |
+          rm -f digest-files.txt
+
+          if [ -n "${INPUT_FILES}" ]; then
+            printf '%s\n' "${INPUT_FILES}" | tr ',' '\n' | sed '/^[[:space:]]*$/d' > digest-files.txt
+          elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            find content -type f -name '*.md' | sort | tail -n 3 > digest-files.txt
+          elif [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
+            git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- content > digest-files.txt
+          else
+            find content -type f -name '*.md' | sort > digest-files.txt
+          fi
+
+          awk '/^content\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/[^[:space:]]+\.md$/' digest-files.txt > digest-files.filtered.txt || true
+          mv digest-files.filtered.txt digest-files.txt
+
+          count=$(grep -c . digest-files.txt || true)
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          {
+            echo "files<<EOF"
+            cat digest-files.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Digest email input"
+            if [ "${count}" -eq 0 ]; then
+              echo
+              echo "No digest files matched this run."
+            else
+              echo
+              cat digest-files.txt
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Validate email configuration
+        if: steps.changed.outputs.count != '0' && inputs.dry_run != 'true'
+        run: |
+          missing=0
+          for key in \
+            POLICY_TRACKER_SMTP_HOST \
+            POLICY_TRACKER_EMAIL_FROM \
+            POLICY_TRACKER_EMAIL_TO
+          do
+            if [ -z "${!key}" ]; then
+              echo "Missing required configuration: ${key}" >&2
+              missing=1
+            fi
+          done
+
+          if [ "${missing}" -ne 0 ]; then
+            echo "Email delivery is not fully configured. See docs/EMAIL-DELIVERY.md." >&2
+            exit 1
+          fi
+
+      - name: Preview email
+        if: steps.changed.outputs.count != '0' && inputs.dry_run == 'true'
+        env:
+          CHANGED_DIGEST_FILES: ${{ steps.changed.outputs.files }}
+        run: bun run scripts/send-digest-email.ts --dry-run
+
+      - name: Send email
+        if: steps.changed.outputs.count != '0' && inputs.dry_run != 'true'
+        env:
+          CHANGED_DIGEST_FILES: ${{ steps.changed.outputs.files }}
+        run: bun run scripts/send-digest-email.ts

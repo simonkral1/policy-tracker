@@ -61,7 +61,13 @@ The Routines clone the repo and open PRs through the Claude GitHub App. The simp
 
 Follow `docs/ROUTINE-SETUP.md`. You will end up with one Routine per digest type (legislative, newsletter, papers), each on its own schedule.
 
-## 7. Optional — custom domain
+## 7. Optional — email delivery
+
+If you want an email whenever new digest content lands on `main`, follow [`docs/EMAIL-DELIVERY.md`](EMAIL-DELIVERY.md).
+
+This uses a separate GitHub Actions workflow plus SMTP credentials stored as repository secrets. Keep it off until the first dry run looks right.
+
+## 8. Optional — custom domain
 
 If you want `policy.safer-ai.org` instead of the `github.io` default:
 
@@ -79,3 +85,4 @@ If you want `policy.safer-ai.org` instead of the `github.io` default:
 | `bun: command not found` | Install Bun: `curl -fsSL https://bun.sh/install \| bash`, then reopen the shell. |
 | Routine run fails with a clone error | Reinstall the Claude GitHub App on the repo (Settings → GitHub Apps). |
 | A new digest is merged but not visible on the site | Check the Pages deploy action; a failed build holds the last good version. |
+| Email workflow fails immediately | Confirm `POLICY_TRACKER_EMAIL_ENABLED=true` and the SMTP / recipient secrets from `docs/EMAIL-DELIVERY.md` are set. |

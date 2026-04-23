@@ -8,6 +8,7 @@
     "validate:sources": "bun run scripts/validate-sources.ts",
     "validate:content": "bun run scripts/validate-content.ts",
     "verify:rss": "bun run scripts/verify-rss.ts",
+    "email:preview": "bun run scripts/send-digest-email.ts --dry-run",
     "test": "bun run validate:sources && bun run validate:content",
     "site:dev": "cd site && bun run dev",
     "site:build": "cd site && bun run build",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "nodemailer": "^7.0.5",
     "typescript": "^5.4.0",
     "yaml": "^2.4.0",
     "zod": "^3.22.0",

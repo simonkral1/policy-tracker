@@ -10,6 +10,10 @@ The site lives at `<policy-tracker-site-url>`. Each week you will find three new
 
 Open the site once, bookmark it, and drop in on your own schedule. It is a static site, so it loads instantly and works offline from cache.
 
+## Email updates
+
+If the repo owner enables the email workflow, you can receive a short update email whenever new digest content lands on `main`. Setup lives in [`docs/EMAIL-DELIVERY.md`](EMAIL-DELIVERY.md).
+
 ## Request a new source
 
 Two ways, pick whichever is less friction:
@@ -29,7 +33,6 @@ Open an issue titled `digest feedback: <date>` and paste in the excerpt. Missing
 
 Listed so expectations stay grounded. These are **planned, not scheduled**:
 
-- Email delivery of each digest.
 - Slack bot that posts the digest in the relevant channel on publish.
 - Audio version, delivered as a podcast RSS feed.
 
