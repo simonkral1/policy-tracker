@@ -16,7 +16,7 @@ You are running inside a Claude Code Routine. The repo is cloned. You can run sh
 
 2. Read the **last 4 paper-tracking digests** in `content/`:
    ```bash
-   ls -1 content/*/paper-tracking-digest.md 2>/dev/null | sort | tail -4
+   ls -1 content/*/paper-tracking.md 2>/dev/null | sort | tail -4
    ```
    For every paper you are about to include, check whether its arXiv ID (or canonical URL) appeared in any of those digests.
 
@@ -98,7 +98,7 @@ Do not include papers scored ≤ 2 unless the author is on the `tracked_authors`
 
 ## Phase 5 — Output format
 
-Write to `content/{YYYY-MM-DD}/paper-tracking-digest.md`.
+Write to `content/{YYYY-MM-DD}/paper-tracking.md`.
 
 **Frontmatter:**
 
@@ -164,7 +164,7 @@ If the digest has **no** papers at all this period, write `_No qualifying papers
 ```bash
 BRANCH="claude/$(date -u +%Y-%m-%d)-papers"
 git checkout -b "$BRANCH"
-git add content/*/paper-tracking-digest.md
+git add content/*/paper-tracking.md
 git commit -m "paper tracking digest — $(date -u +%Y-%m-%d)"
 git push -u origin "$BRANCH"
 
@@ -172,7 +172,7 @@ gh pr create \
   --base main \
   --head "$BRANCH" \
   --title "paper tracking digest — $(date -u +%Y-%m-%d)" \
-  --body "$(grep -A100 '^editor_note:' content/*/paper-tracking-digest.md | head -5)"
+  --body "$(grep -A100 '^editor_note:' content/*/paper-tracking.md | head -5)"
 ```
 
 Only commit the new digest file. Do not push to `main`.

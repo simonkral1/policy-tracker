@@ -7,7 +7,7 @@ A fortnightly (14-day window) digest of research papers most likely to change ho
 Each run writes one file:
 
 ```
-content/{YYYY-MM-DD}/paper-tracking-digest.md
+content/{YYYY-MM-DD}/paper-tracking.md
 ```
 
 and opens a PR on branch `claude/{YYYY-MM-DD}-papers` against `main`.
@@ -33,7 +33,7 @@ Full schema in [`output-schema.md`](output-schema.md).
 
 ## Success criteria
 
-- [ ] File path is `content/{today}/paper-tracking-digest.md`.
+- [ ] File path is `content/{today}/paper-tracking.md`.
 - [ ] Frontmatter validates.
 - [ ] Every paper has `relevance_score` between 2 and 5 (1s excluded).
 - [ ] Table is sorted descending by `relevance_score`, ties broken alphabetically.

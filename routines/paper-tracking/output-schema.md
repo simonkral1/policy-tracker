@@ -5,7 +5,7 @@ The authoritative reference for what a paper-tracking digest file looks like.
 ## File path
 
 ```
-content/{YYYY-MM-DD}/paper-tracking-digest.md
+content/{YYYY-MM-DD}/paper-tracking.md
 ```
 
 ## Frontmatter
@@ -122,4 +122,4 @@ editor_note: "METR's new elicitation protocol is the week's frontier-evaluation 
 
 ## Validation
 
-Run `bun run validate:digest content/{date}/paper-tracking-digest.md` to check frontmatter, section order, relevance sort, and stage vocabulary.
+Run `bun run validate:digest content/{date}/paper-tracking.md` to check frontmatter, section order, relevance sort, and stage vocabulary.
