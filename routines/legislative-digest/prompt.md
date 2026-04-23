@@ -72,7 +72,7 @@ Use `sources/legislative.yaml` `search_hints` fields where provided. Prefer WebS
 
 1. **Stage field (mandatory).** Every item has `stage:` drawn from: `draft`, `consultation-open`, `consultation-closed`, `amendments`, `trilogue`, `adopted`, `in-force`, `superseded`. If the stage doesn't fit any of these, use the closest match and explain in `why:`.
 2. **Source URL per claim.** No deadline, figure, or quoted text without a direct URL to an authoritative source. Secondary reporting is allowed as a *supplementary* source, not as the primary.
-3. **Flag uncertainty.** If a deadline or fact is not confirmed by an authoritative source, add `confidence: low` and a `why: …` one-liner explaining the gap.
+3. **Flag uncertainty.** If a deadline or fact is not confirmed by an authoritative source, add two bullets under the item: `- **Confidence:** low` and `- **Why (confidence):** {one-line reason}`. Use Title Case label style — match `**Organiser:**`, `**Jurisdiction:**`, etc. Never render field labels lowercase (`**confidence:**`, `**why:**`).
 4. **Deduplicate.** If two sources cover the same event, produce one item with `sources: [url1, url2]`.
 5. **Deltas over absolutes.** Tag items `🆕 NEW` if they did not appear in any of the last 4 digests, OR if they appeared previously but have moved stage (e.g. `consultation-open` → `consultation-closed`) in the past 7 days. For stage moves, say what the prior stage was.
 6. **Quality over quantity.** Empty sections are better than padded ones. If nothing warrants ACT NOW, write `_No items this period._` under the heading and move on.

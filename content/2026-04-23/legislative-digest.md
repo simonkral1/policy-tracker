@@ -33,8 +33,8 @@ editor_note: "The Digital Omnibus on AI is the week's gravitational centre: co-l
   - https://www.europarl.europa.eu/news/en/press-room/20250310IPR27231/parliament-adopts-its-calendar-for-2026
   - https://www.europarl.europa.eu/legislative-train/package-digital-package/file-digital-omnibus-on-ai
 - **Why it matters:** Cyprus Presidency has publicly flagged May 2026 as its target for a concluded Omnibus text, which would put a plenary confirmation vote into the May II session window. This is the last realistic moment to influence the text before enforcement powers under Articles 91–93 and 101 begin applying on 2 August 2026.
-- **confidence:** medium
-- **why:** Plenary agenda for May is not yet published; adoption is contingent on a successful 28 April trilogue.
+- **Confidence:** medium
+- **Why (confidence):** Plenary agenda for May is not yet published; adoption is contingent on a successful 28 April trilogue.
 
 ### Colorado AI Act — statutory compliance date and replacement-framework pivot
 - **Organiser:** Colorado General Assembly / Governor's AI Policy Work Group
@@ -46,8 +46,8 @@ editor_note: "The Digital Omnibus on AI is the week's gravitational centre: co-l
   - https://www.hunton.com/privacy-and-information-security-law/enforcement-of-colorado-ai-act-delayed-until-june-2026
   - https://www.mayerbrown.com/en/insights/publications/2026/03/the-colorado-ai-policy-work-group-proposes-an-updated-framework-to-replace-the-colorado-ai-act
 - **Why it matters:** The Polis-appointed Work Group proposed on 17 March 2026 to replace SB24-205 with an Automated Decision-Making Technology (ADMT) framework effective 1 January 2027. Whether the 30 June 2026 enforcement date still binds developers of high-risk systems depends on legislative action during Colorado's short session. The Trump Administration's December 2025 preemption EO adds further uncertainty — this is now a federal-state preemption test case, not a routine state-law compliance exercise.
-- **confidence:** medium
-- **why:** The replacement framework is a proposal, not enacted law; the 30 June compliance date currently stands but may be amended mid-period.
+- **Confidence:** medium
+- **Why (confidence):** The replacement framework is a proposal, not enacted law; the 30 June compliance date currently stands but may be amended mid-period.
 
 ### EU Council conclusion of the Council of Europe Framework Convention on AI 🆕 NEW (was: consent → now: awaiting Council decision)
 - **Organiser:** Council of the EU; Council of Europe CDNET
@@ -80,8 +80,8 @@ editor_note: "The Digital Omnibus on AI is the week's gravitational centre: co-l
   - https://www.europarl.europa.eu/legislative-train/theme-a-new-plan-for-europe-s-sustainable-prosperity-and-competitiveness/file-cloud-and-ai-development-act
   - https://digital-strategy.ec.europa.eu/en/consultations/have-your-say-future-cloud-and-ai-policies-eu
 - **Why it matters:** CADA is the Commission's primary vehicle for compute sovereignty and data-centre policy — the compute-governance leg of the frontier-risk stool. Industry lobbying (CISPE, March 2026) is already pressuring the text toward narrow market-access questions and away from security or safe-by-design conditionality. The "safe-by-design" framing SaferAI cares about has to be injected now, before the College adopts the text.
-- **confidence:** low
-- **why:** Commission has not published a revised adoption date; original Q1 2026 target has slipped.
+- **Confidence:** low
+- **Why (confidence):** Commission has not published a revised adoption date; original Q1 2026 target has slipped.
 
 ### US White House — National AI Legislative Framework 🆕 NEW
 - **Organiser:** White House / Department of Commerce / FTC
