@@ -100,10 +100,14 @@ editor_note: "One or two sentences on the week's pattern across newsletters. Reu
 - `period_end` = `date`.
 - `sources_cited` = count of distinct URLs in the body.
 
-**Body — grouped by newsletter, then cross-newsletter themes:**
+**Body layout (in this order):**
+
+1. **Newsletters with items this week** — one `## {Newsletter name}` heading each, followed by the item blocks. *Do not create a heading for newsletters with zero items this week.*
+2. **Cross-newsletter themes.**
+3. **Quiet newsletters** — a compact single section listing everything with no in-window item, so the reader can see what was scanned without scrolling through ten empty H2s.
 
 ```markdown
-## {Newsletter name}
+## {Newsletter name that had items}
 
 ### {Item title} 🆕 NEW
 - **URL:** https://...
@@ -111,9 +115,9 @@ editor_note: "One or two sentences on the week's pattern across newsletters. Reu
 - **Stage:** analysis
 - **Why it matters:** Two to four sentences. Explain the *policy implication*, not the abstract. If it changes what SaferAI should do this week, say what.
 
-(repeat up to 3 items per newsletter; or `_No items this week._`)
+(repeat up to 3 items per newsletter)
 
-## {Next newsletter name}
+## {Next newsletter that had items}
 ...
 
 ## 🔗 Cross-newsletter themes
@@ -121,7 +125,20 @@ editor_note: "One or two sentences on the week's pattern across newsletters. Reu
 Up to 3 short bullets flagging themes that appeared across multiple newsletters this week. One sentence each.
 
 - **{Theme}:** {what multiple newsletters are converging on, and the list of newsletter names that covered it}.
+
+## 🔇 Quiet this week
+
+_Newsletters scanned but with no in-window frontier-risk-relevant item._
+
+- **Hyperdimensional** — last post 2026-04-08, outside window.
+- **GDM AI Policy Perspectives** — last post 2026-04-09, outside window.
+- **Peter Wildeford** — no in-window post confirmed.
+- **Dwarkesh Podcast** — Jensen Huang episode 2026-04-15 just outside window; flag for next week.
+- **Epoch AI (Gradient Updates)** — no 2026 activity surfaced.
+- _(etc.)_
 ```
+
+Keep each Quiet-this-week line to one sentence — "last post" date if known, or the one reason it produced nothing (outside window / fetch blocked / could not verify). Do not repeat agent-tooling detail here; that belongs in the completion summary, not the digest.
 
 Item summaries are **2–4 sentences**. Anything shorter is useless; anything longer duplicates the source and wastes the team's time.
 
