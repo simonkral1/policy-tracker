@@ -28,25 +28,41 @@ const latestLegislative = sortedLegislative[0];
 const latestNewsletter = sortedNewsletter[0];
 const latestPapers = sortedPapers[0];
 
-// Parse "ACT NOW" section from most recent legislative digest.
+// Pull up to three item titles from the most recent legislative digest.
+// Preference order: ACT NOW → ON THE RADAR → PIPELINE WATCH. Stops at 3.
 function extractTopThree(
   entry: CollectionEntry<"legislative"> | undefined,
 ): string[] {
   if (!entry?.body) return [];
-  // Split on the ACT NOW heading. Tolerate variations in emoji/whitespace.
-  const actNowRe = /^##\s*(?:🔴\s*)?ACT\s*NOW\s*$/im;
-  const parts = entry.body.split(actNowRe);
-  if (parts.length < 2) return [];
-  const after = parts[1];
-  // Cut at the next level-2 heading.
-  const nextHeadingIdx = after.search(/^##\s+/m);
-  const section = nextHeadingIdx === -1 ? after : after.slice(0, nextHeadingIdx);
-  // Pull the first three "### " headings.
-  const headingRe = /^###\s+(.+?)\s*$/gm;
+
+  const body = entry.body;
+  const sectionOrder: RegExp[] = [
+    /^##\s*(?:🔴\s*)?ACT\s*NOW\s*$/im,
+    /^##\s*(?:🟡\s*)?ON\s*THE\s*RADAR\s*$/im,
+    /^##\s*(?:🟢\s*)?PIPELINE\s*WATCH\s*$/im,
+  ];
+
   const titles: string[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = headingRe.exec(section)) !== null && titles.length < 3) {
-    titles.push(m[1].replace(/\s+/g, " ").trim());
+  for (const re of sectionOrder) {
+    if (titles.length >= 3) break;
+    const parts = body.split(re);
+    if (parts.length < 2) continue;
+    const after = parts[1];
+    const nextHeadingIdx = after.search(/^##\s+/m);
+    const section = nextHeadingIdx === -1 ? after : after.slice(0, nextHeadingIdx);
+    const headingRe = /^###\s+(.+?)\s*$/gm;
+    let m: RegExpExecArray | null;
+    while ((m = headingRe.exec(section)) !== null && titles.length < 3) {
+      titles.push(
+        m[1]
+          .replace(/[🔴🟡🟢📅💡📚📖🔗🔇🆕]/gu, "")
+          .replace(/\bNEW\b/g, "")
+          .replace(/\(follow-up[^)]*\)/gi, "")
+          .replace(/\(was:[^)]*\)/gi, "")
+          .replace(/\s+/g, " ")
+          .trim(),
+      );
+    }
   }
   return titles;
 }
@@ -62,7 +78,9 @@ const latestCards = [latestLegislative, latestNewsletter, latestPapers].filter(
 
 <BaseLayout title="SaferAI Policy Tracker" description="Weekly digests of global AI-policy activity, curated by SaferAI.">
   <section class="hero">
-    <h1>SaferAI Policy Tracker</h1>
+    <div class="masthead"><span class="issue-tag">Policy Tracker <strong>V 1.0</strong></span></div>
+    <div class="kicker">SaferAI · Weekly</div>
+    <h1>Policy Tracker</h1>
     <p class="tagline">
       Weekly reading on legislative, research, and newsletter signals in global
       AI policy — curated by the SaferAI policy team.

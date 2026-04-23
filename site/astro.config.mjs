@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import remarkRefine from "./src/lib/remark-refine.mjs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
   markdown: {
     gfm: true,
     smartypants: true,
+    remarkPlugins: [remarkRefine],
     shikiConfig: {
       theme: "github-light",
       wrap: true,
