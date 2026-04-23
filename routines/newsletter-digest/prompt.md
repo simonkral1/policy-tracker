@@ -29,7 +29,19 @@ Before summarising anything:
 For each core newsletter:
 
 - If `rss` is non-null, fetch the RSS feed and list items published in the **last 7 days** (based on the feed's `pubDate`).
-- If `rss` is `null`, fetch the `url` with WebFetch and extract items from the page. Use whatever hint is in the source `notes` (e.g. Politico AI Decoded requires an archive page). If you can't get access, skip the source and log it in the completion summary.
+- If `rss` is `null`, fetch the `url` with WebFetch and extract items from the page. Use whatever hint is in the source `notes` (e.g. Politico AI Decoded requires an archive page).
+
+### Fallback when fetches fail (403, 429, network error, anti-bot)
+
+Substack and some other publishers return 403 on direct RSS/landing-page fetches from bot user agents. When that happens:
+
+1. **Don't skip the newsletter.** Fall through to this fallback chain.
+2. **WebSearch first** for `"{newsletter name}" site:{newsletter domain} after:{ISO date 7 days ago}` and equivalents. This typically surfaces in-window posts with canonical URLs.
+3. **WebFetch each candidate post URL individually** — per-post URLs often succeed where the feed doesn't.
+4. **Triangulate publication date** from the search snippet, from any visible `<time>` on the post page, or from `"{title} {newsletter}"` searches. If you can only confirm "~N days ago" rather than an exact date, include it and note the approximation in the body (e.g. "Published: 2026-04-20 (approximate; confirmed ~3 days ago as of {run date})").
+5. **Record the failure** in the completion summary — which fetch method was blocked, what fallback you used, and which newsletters ended up with zero in-window items *despite* the fallback.
+
+The bar for including an item is still: confirmed canonical URL + confirmed in-window publication. Do not include speculative items just because search surfaced the newsletter name.
 
 Cap per-newsletter reading at a reasonable budget — do not exhaustively read every item in a high-volume newsletter (e.g. Zvi, Lawfare). Read titles and lede paragraphs first, then deep-read only the items that look frontier-risk-relevant.
 

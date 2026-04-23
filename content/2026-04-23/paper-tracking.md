@@ -12,10 +12,10 @@ editor_note: "Two pieces of evidence this fortnight sharpen the pre-deployment e
 
 | Relevance | Title | Authors | Venue | Stage | URL |
 |-----------|-------|---------|-------|-------|-----|
-| 5 | Automated Weak-to-Strong Researcher: LLMs scaling scalable oversight 🆕 NEW | Anthropic Alignment Science team | Anthropic | preprint | alignment.anthropic.com/2026/automated-w2s-researcher |
-| 5 | MirrorCode: Evidence AI can already do some weeks-long coding tasks 🆕 NEW | METR & Epoch AI research teams | METR, Epoch AI | preprint | metr.org/blog/2026-04-10-mirrorcode-preliminary-results |
-| 4 | Frontier Safety Framework v3: harmful-manipulation CCL and Tracked Capability Levels 🆕 NEW | Google DeepMind Frontier Safety team | DeepMind (framework + technical report) | published | deepmind.google/blog/strengthening-our-frontier-safety-framework |
-| 3 | From Safety Risk to Design Principle: Peer-Preservation in Multi-Agent LLM Systems 🆕 NEW | Dietrich | arXiv | preprint | arxiv.org/abs/2604.08465 |
+| 5 | Automated Weak-to-Strong Researcher: LLMs scaling scalable oversight 🆕 NEW | Anthropic Alignment Science team | Anthropic | preprint | https://alignment.anthropic.com/2026/automated-w2s-researcher |
+| 5 | MirrorCode: Evidence AI can already do some weeks-long coding tasks 🆕 NEW | METR & Epoch AI research teams | METR, Epoch AI | preprint | https://metr.org/blog/2026-04-10-mirrorcode-preliminary-results |
+| 4 | Frontier Safety Framework v3: harmful-manipulation CCL and Tracked Capability Levels 🆕 NEW | Google DeepMind Frontier Safety team | DeepMind (framework + technical report) | published | https://deepmind.google/blog/strengthening-our-frontier-safety-framework |
+| 3 | From Safety Risk to Design Principle: Peer-Preservation in Multi-Agent LLM Systems 🆕 NEW | Dietrich | arXiv | preprint | https://arxiv.org/abs/2604.08465 |
 
 ## 📖 Deep dives
 

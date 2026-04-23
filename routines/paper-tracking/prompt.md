@@ -132,7 +132,7 @@ editor_note: "One or two sentences on what shifted in the research frontier this
 
 - Sort descending by `relevance_score`. Ties broken by alphabetical title.
 - Titles include `🆕 NEW` marker where applicable, and `(follow-up: v2)` where applicable.
-- Use a short arXiv ID style for the URL column where possible (`arxiv.org/abs/NNNN.NNNNN`), so the table stays readable.
+- URL column **must use markdown link syntax** so it renders as a clickable link: `[arxiv.org/abs/NNNN.NNNNN](https://arxiv.org/abs/NNNN.NNNNN)`. Keep the visible label short (the hostname + path), but the `href` must be a full `https://` URL. Never put a bare hostname with no protocol in the cell — it will render as plain text.
 
 ### Section 2: Deep dives (relevance 5 only)
 

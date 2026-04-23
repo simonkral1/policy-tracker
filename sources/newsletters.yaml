@@ -48,13 +48,13 @@ newsletters:
     notes: Jack Clark's long-running weekly. Technical + policy.
 
   - name: Peter Wildeford
-    url: https://blog.peterwildeford.com
-    rss: https://blog.peterwildeford.com/feed
+    url: https://peterwildeford.substack.com
+    rss: https://peterwildeford.substack.com/feed
     category: ai-policy-analysis
     language: en
     priority: core
-    last_verified: 2026-04-22
-    notes: AI forecasting, policy.
+    last_verified: 2026-04-23
+    notes: AI forecasting, policy. Active Substack (old blog.peterwildeford.com is inactive).
 
   - name: Epoch AI (Gradient Updates)
     url: https://epochai.substack.com
