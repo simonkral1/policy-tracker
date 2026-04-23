@@ -109,9 +109,16 @@ function extractHighlights(body: string): string[] {
   const headingRe = /^###\s+(.+?)\s*$/gm;
   let match: RegExpExecArray | null;
   while ((match = headingRe.exec(body)) !== null && titles.length < 3) {
-    titles.push(match[1].replace(/\s+/g, " ").trim());
+    titles.push(cleanEmailTitle(match[1]));
   }
   return titles;
+}
+
+function cleanEmailTitle(value: string): string {
+  return value
+    .replace(/\s*🆕\s*NEW\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function coerceIsoDate(value: unknown): string | undefined {
@@ -215,7 +222,7 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
 
   return {
     file,
-    title: title.trim(),
+    title: cleanEmailTitle(title.trim()),
     type,
     date: dateValue,
     periodStart,
@@ -325,7 +332,7 @@ function buildHtmlBody(subject: string, digests: DigestSummary[]): string {
             ${escapeHtml(TYPE_LABEL[digest.type])}
           </span>
         </div>
-        <h2 style="font-size:29px;line-height:1.12;margin:0 0 12px;font-family:'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.01em;">
+        <h2 style="font-size:28px;line-height:1.18;margin:0 0 12px;font-family:Inter,Arial,sans-serif;font-weight:600;letter-spacing:-0.02em;">
           <a href="${escapeHtml(digest.siteUrl)}" style="color:#202137;text-decoration:none;">${escapeHtml(digest.title)}</a>
         </h2>
         <p style="margin:0;color:#5a5a6a;line-height:1.6;font-size:15px;font-family:Inter,Arial,sans-serif;">${escapeHtml(digest.editorNote ?? digest.snippet)}</p>
@@ -368,7 +375,7 @@ function buildHtmlBody(subject: string, digests: DigestSummary[]): string {
                   <strong style="background:#5b86b5;color:#ffffff;padding:5px 11px;margin-left:8px;font-weight:500;font-size:11px;letter-spacing:0.14em;display:inline-block;">Email Update</strong>
                 </span>
               </div>
-              <h1 style="margin:0 0 12px;font-size:42px;line-height:1.02;color:#202137;font-family:'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;">${escapeHtml(subject)}</h1>
+              <h1 style="margin:0 0 12px;font-size:40px;line-height:1.04;color:#202137;font-family:Inter,Arial,sans-serif;font-weight:600;letter-spacing:-0.03em;">${escapeHtml(subject)}</h1>
               <p style="margin:0;max-width:60ch;color:#5a5a6a;line-height:1.55;font-size:17px;font-family:Inter,Arial,sans-serif;">${escapeHtml(intro)}</p>
             </div>
           </header>
