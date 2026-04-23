@@ -26,7 +26,10 @@ const links = [
 
 <nav class="site-nav" aria-label="Primary">
   <div class="inner">
-    <a class="brand" href={withBase("/")}>Policy Tracker</a>
+    <a class="brand" href={withBase("/")} aria-label="SaferAI Policy Tracker — home">
+      <img src={`${base}brand/saferai-logo.png`} alt="SaferAI" />
+      <span class="brand-sub">Policy Tracker</span>
+    </a>
     <ul>
       {
         links.map((link) => (
