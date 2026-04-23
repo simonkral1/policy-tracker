@@ -22,6 +22,12 @@ interface DigestSummary {
   githubUrl: string;
 }
 
+interface TypeColorSet {
+  text: string;
+  bg: string;
+  border: string;
+}
+
 const TYPE_LABEL: Record<DigestType, string> = {
   legislative: "Legislative",
   newsletter: "Newsletter",
@@ -32,6 +38,24 @@ const TYPE_ORDER: Record<DigestType, number> = {
   legislative: 0,
   newsletter: 1,
   papers: 2,
+};
+
+const TYPE_COLORS: Record<DigestType, TypeColorSet> = {
+  legislative: {
+    text: "#3d6690",
+    bg: "#e1e2ef",
+    border: "#9ab2cc",
+  },
+  newsletter: {
+    text: "#700c8c",
+    bg: "#f4e4f7",
+    border: "#d6addf",
+  },
+  papers: {
+    text: "#5b7b7a",
+    bg: "#e3ebea",
+    border: "#abc2bf",
+  },
 };
 
 const REPO_ROOT = path.resolve(import.meta.dir, "..");
@@ -115,6 +139,17 @@ function resolveGitHubUrl(file: string): string {
   const server = process.env.GITHUB_SERVER_URL ?? "https://github.com";
   const repo = process.env.GITHUB_REPOSITORY ?? "";
   return `${normaliseUrl(server)}/${repo}/blob/main/${file}`;
+}
+
+function resolveBaseSiteUrl(): string {
+  return normaliseUrl(
+    process.env.POLICY_TRACKER_SITE_URL?.trim() ||
+      `https://${process.env.GITHUB_REPOSITORY_OWNER ?? "unknown"}.github.io/${process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "policy-tracker"}`,
+  );
+}
+
+function resolveLogoUrl(): string {
+  return `${resolveBaseSiteUrl()}/brand/saferai-logo.png`;
 }
 
 function collectInputFiles(argv: string[]): { dryRun: boolean; files: string[] } {
@@ -248,7 +283,7 @@ function buildTextBody(digests: DigestSummary[]): string {
     "",
     ...blocks.flatMap((block) => [block, ""]),
     "Archive:",
-    `${normaliseUrl(process.env.POLICY_TRACKER_SITE_URL?.trim() || `https://${process.env.GITHUB_REPOSITORY_OWNER ?? "unknown"}.github.io/${process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "policy-tracker"}`)}/archive/`,
+    `${resolveBaseSiteUrl()}/archive/`,
   ].join("\n");
 }
 
@@ -256,9 +291,12 @@ function buildHtmlBody(subject: string, digests: DigestSummary[]): string {
   const intro = digests.length === 1
     ? "A new Policy Tracker digest is live."
     : `${digests.length} Policy Tracker digests are live.`;
-  const archiveUrl = `${normaliseUrl(process.env.POLICY_TRACKER_SITE_URL?.trim() || `https://${process.env.GITHUB_REPOSITORY_OWNER ?? "unknown"}.github.io/${process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "policy-tracker"}`)}/archive/`;
+  const homeUrl = resolveBaseSiteUrl();
+  const archiveUrl = `${homeUrl}/archive/`;
+  const logoUrl = resolveLogoUrl();
 
   const cards = digests.map((digest) => {
+    const colors = TYPE_COLORS[digest.type];
     const meta: string[] = [
       `<strong>${escapeHtml(TYPE_LABEL[digest.type])}</strong>`,
       escapeHtml(formatDate(digest.date)),
@@ -274,22 +312,27 @@ function buildHtmlBody(subject: string, digests: DigestSummary[]): string {
     }
 
     const highlights = digest.highlights.length > 0
-      ? `<ul style="margin:0.75rem 0 0 1.1rem;padding:0;">${digest.highlights
-          .map((highlight) => `<li style="margin:0.25rem 0;">${escapeHtml(highlight)}</li>`)
+      ? `<ul style="margin:0.85rem 0 0 1.15rem;padding:0;color:#202137;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:1.55;">${digest.highlights
+          .map((highlight) => `<li style="margin:0.3rem 0;">${escapeHtml(highlight)}</li>`)
           .join("")}</ul>`
       : "";
 
     return `
-      <section style="border:1px solid #d0d7de;border-radius:12px;padding:20px;margin:0 0 16px;background:#ffffff;">
-        <div style="font-size:13px;color:#57606a;margin-bottom:8px;">${meta.join(" · ")}</div>
-        <h2 style="font-size:20px;line-height:1.3;margin:0 0 10px;">
-          <a href="${escapeHtml(digest.siteUrl)}" style="color:#0969da;text-decoration:none;">${escapeHtml(digest.title)}</a>
+      <section style="border:1px solid #e5e3e0;border-radius:4px;padding:22px 24px 24px;margin:0 0 18px;background:#ffffff;">
+        <div style="font-size:12px;color:#5a5a6a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em;font-family:Inter,Arial,sans-serif;">${meta.join(" · ")}</div>
+        <div style="margin:0 0 12px;">
+          <span style="display:inline-block;color:${colors.text};background:${colors.bg};border:1px solid ${colors.border};padding:4px 10px;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;font-family:Inter,Arial,sans-serif;">
+            ${escapeHtml(TYPE_LABEL[digest.type])}
+          </span>
+        </div>
+        <h2 style="font-size:29px;line-height:1.12;margin:0 0 12px;font-family:'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.01em;">
+          <a href="${escapeHtml(digest.siteUrl)}" style="color:#202137;text-decoration:none;">${escapeHtml(digest.title)}</a>
         </h2>
-        <p style="margin:0;color:#24292f;line-height:1.55;">${escapeHtml(digest.editorNote ?? digest.snippet)}</p>
+        <p style="margin:0;color:#5a5a6a;line-height:1.6;font-size:15px;font-family:Inter,Arial,sans-serif;">${escapeHtml(digest.editorNote ?? digest.snippet)}</p>
         ${highlights}
         <p style="margin:16px 0 0;">
-          <a href="${escapeHtml(digest.siteUrl)}" style="display:inline-block;background:#0969da;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:999px;font-weight:600;">Read digest</a>
-          <a href="${escapeHtml(digest.githubUrl)}" style="display:inline-block;margin-left:8px;color:#0969da;">View source</a>
+          <a href="${escapeHtml(digest.siteUrl)}" style="display:inline-block;background:#5b86b5;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:2px;font-weight:600;font-family:Inter,Arial,sans-serif;">Read digest</a>
+          <a href="${escapeHtml(digest.githubUrl)}" style="display:inline-block;margin-left:10px;color:#3d6690;font-family:Inter,Arial,sans-serif;">View source</a>
         </p>
       </section>
     `;
@@ -298,17 +341,42 @@ function buildHtmlBody(subject: string, digests: DigestSummary[]): string {
   return `
     <!doctype html>
     <html lang="en">
-      <body style="margin:0;padding:24px;background:#f6f8fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#24292f;">
-        <div style="max-width:680px;margin:0 auto;">
-          <header style="margin:0 0 20px;">
-            <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#57606a;">SaferAI Policy Tracker</p>
-            <h1 style="margin:0 0 10px;font-size:28px;line-height:1.2;">${escapeHtml(subject)}</h1>
-            <p style="margin:0;color:#57606a;line-height:1.5;">${escapeHtml(intro)}</p>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap"
+        />
+      </head>
+      <body style="margin:0;padding:24px;background:#f9f8f8;color:#202137;">
+        <div style="max-width:760px;margin:0 auto;">
+          <header style="margin:0 0 28px;">
+            <div style="background:rgba(255,255,255,0.92);border:1px solid #e5e3e0;padding:14px 20px;">
+              <a href="${escapeHtml(homeUrl)}" style="display:inline-flex;align-items:center;gap:12px;text-decoration:none;">
+                <img src="${escapeHtml(logoUrl)}" alt="SaferAI" style="height:40px;width:auto;display:block;" />
+                <span style="color:#5a5a6a;font-size:14px;font-family:Inter,Arial,sans-serif;padding-left:12px;margin-left:4px;border-left:1px solid #e5e3e0;">Policy Tracker</span>
+              </a>
+            </div>
+            <div style="padding:26px 0 8px;">
+              <div style="display:flex;align-items:center;gap:0;margin-bottom:30px;">
+                <div style="flex:1;border-top:1px solid #1a1a24;"></div>
+                <span style="font-family:Inter,Arial,sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#5a5a6a;padding:0 0 0 12px;white-space:nowrap;">
+                  Weekly Issue
+                  <strong style="background:#5b86b5;color:#ffffff;padding:5px 11px;margin-left:8px;font-weight:500;font-size:11px;letter-spacing:0.14em;display:inline-block;">Email Update</strong>
+                </span>
+              </div>
+              <h1 style="margin:0 0 12px;font-size:42px;line-height:1.02;color:#202137;font-family:'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;">${escapeHtml(subject)}</h1>
+              <p style="margin:0;max-width:60ch;color:#5a5a6a;line-height:1.55;font-size:17px;font-family:Inter,Arial,sans-serif;">${escapeHtml(intro)}</p>
+            </div>
           </header>
           ${cards.join("")}
-          <footer style="padding-top:8px;font-size:13px;color:#57606a;">
-            <p style="margin:0 0 8px;">This email was sent automatically after new digest content landed on <code>main</code>.</p>
-            <p style="margin:0;"><a href="${escapeHtml(archiveUrl)}" style="color:#0969da;">Browse the archive</a></p>
+          <footer style="border-top:1px solid #e5e3e0;padding-top:18px;font-size:13px;color:#5a5a6a;font-family:Inter,Arial,sans-serif;">
+            <p style="margin:0 0 8px;">SaferAI — generated by Claude Code Routines.</p>
+            <p style="margin:0 0 8px;">This email was sent automatically after new digest content landed on <code style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#ffffff;border:1px solid #e5e3e0;padding:2px 6px;border-radius:2px;">main</code>.</p>
+            <p style="margin:0;"><a href="${escapeHtml(archiveUrl)}" style="color:#3d6690;">Browse the archive</a></p>
           </footer>
         </div>
       </body>
