@@ -18,7 +18,6 @@ interface DigestSummary {
   snippet: string;
   highlights: string[];
   siteUrl: string;
-  githubUrl: string;
 }
 
 interface SlackResponse {
@@ -99,12 +98,6 @@ function resolveSiteUrl(type: DigestType, date: string): string {
   return `${resolveBaseSiteUrl()}/digests/${type}/${date}/`;
 }
 
-function resolveGitHubUrl(file: string): string {
-  const server = process.env.GITHUB_SERVER_URL ?? "https://github.com";
-  const repo = process.env.GITHUB_REPOSITORY ?? "";
-  return `${server.replace(/\/$/, "")}/${repo}/blob/main/${file}`;
-}
-
 function extractHighlights(body: string): string[] {
   const titles: string[] = [];
   const headingRe = /^###\s+(.+?)\s*$/gm;
@@ -181,7 +174,6 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
         : snippetSource,
     highlights: extractHighlights(parsed.content),
     siteUrl: resolveSiteUrl(type, date),
-    githubUrl: resolveGitHubUrl(file),
   };
 }
 
@@ -202,6 +194,7 @@ function buildSlackText(digests: DigestSummary[]): string {
 }
 
 function buildSlackBlocks(digests: DigestSummary[]): unknown[] {
+  const introMessage = process.env.POLICY_TRACKER_SLACK_INTRO_MESSAGE?.trim();
   const blocks: unknown[] = [
     {
       type: "header",
@@ -218,8 +211,19 @@ function buildSlackBlocks(digests: DigestSummary[]): unknown[] {
         text: `${digests.length === 1 ? "A new digest is live." : `${digests.length} digests are live.`}\n<${resolveBaseSiteUrl()}/archive/|Browse archive>`,
       },
     },
-    { type: "divider" },
   ];
+
+  if (introMessage) {
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: introMessage,
+      },
+    });
+  }
+
+  blocks.push({ type: "divider" });
 
   for (const digest of digests) {
     const meta = [
@@ -247,11 +251,6 @@ function buildSlackBlocks(digests: DigestSummary[]): unknown[] {
           type: "button",
           text: { type: "plain_text", text: "Read digest", emoji: false },
           url: digest.siteUrl,
-        },
-        {
-          type: "button",
-          text: { type: "plain_text", text: "View source", emoji: false },
-          url: digest.githubUrl,
         },
       ],
     });
@@ -300,13 +299,18 @@ async function resolveSlackUserId(token: string): Promise<string> {
 
 async function sendSlackDm(digests: DigestSummary[]): Promise<void> {
   const token = requiredEnv("POLICY_TRACKER_SLACK_TOKEN");
-  const userId = await resolveSlackUserId(token);
-  const conversation = await slackApi("conversations.open", token, {
-    users: userId,
-  });
-  const channelId = conversation.channel?.id;
+  const configuredChannelId = process.env.POLICY_TRACKER_SLACK_CHANNEL_ID?.trim();
+  let channelId = configuredChannelId;
+
   if (!channelId) {
-    throw new Error("conversations.open did not return a channel id");
+    const userId = await resolveSlackUserId(token);
+    const conversation = await slackApi("conversations.open", token, {
+      users: userId,
+    });
+    channelId = conversation.channel?.id;
+    if (!channelId) {
+      throw new Error("conversations.open did not return a channel id");
+    }
   }
 
   const message = await slackApi("chat.postMessage", token, {

@@ -19,6 +19,14 @@ on:
         options:
           - "true"
           - "false"
+      channel_id:
+        description: "Optional Slack channel ID. If omitted, posts a DM to the configured user."
+        required: false
+        type: string
+      intro_message:
+        description: "Optional message to include before the digest cards"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -33,6 +41,8 @@ jobs:
       POLICY_TRACKER_SLACK_TOKEN: ${{ secrets.POLICY_TRACKER_SLACK_TOKEN }}
       POLICY_TRACKER_SLACK_USER_EMAIL: ${{ vars.POLICY_TRACKER_SLACK_USER_EMAIL }}
       POLICY_TRACKER_SLACK_USER_ID: ${{ vars.POLICY_TRACKER_SLACK_USER_ID }}
+      POLICY_TRACKER_SLACK_CHANNEL_ID: ${{ inputs.channel_id || vars.POLICY_TRACKER_SLACK_CHANNEL_ID }}
+      POLICY_TRACKER_SLACK_INTRO_MESSAGE: ${{ inputs.intro_message }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
