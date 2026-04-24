@@ -1,0 +1,93 @@
+name: slack-digest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+  workflow_dispatch:
+    inputs:
+      files:
+        description: "Optional comma- or newline-separated digest paths under content/"
+        required: false
+        type: string
+      dry_run:
+        description: "Build the Slack message without posting it"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+
+jobs:
+  slack-digest:
+    name: slack-digest
+    if: ${{ vars.POLICY_TRACKER_SLACK_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    env:
+      POLICY_TRACKER_SITE_URL: ${{ vars.POLICY_TRACKER_SITE_URL }}
+      POLICY_TRACKER_SLACK_TOKEN: ${{ secrets.POLICY_TRACKER_SLACK_TOKEN }}
+      POLICY_TRACKER_SLACK_USER_EMAIL: ${{ vars.POLICY_TRACKER_SLACK_USER_EMAIL }}
+      POLICY_TRACKER_SLACK_USER_ID: ${{ vars.POLICY_TRACKER_SLACK_USER_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Determine digest files
+        id: changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          INPUT_FILES: ${{ inputs.files }}
+        run: |
+          rm -f digest-files.txt
+
+          if [ -n "${INPUT_FILES}" ]; then
+            printf '%s\n' "${INPUT_FILES}" | tr ',' '\n' | sed '/^[[:space:]]*$/d' > digest-files.txt
+          elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            find content -type f -name '*.md' | sort | tail -n 3 > digest-files.txt
+          elif [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
+            git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- content > digest-files.txt
+          else
+            find content -type f -name '*.md' | sort > digest-files.txt
+          fi
+
+          awk '/^content\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/[^[:space:]]+\.md$/' digest-files.txt > digest-files.filtered.txt || true
+          mv digest-files.filtered.txt digest-files.txt
+
+          count=$(grep -c . digest-files.txt || true)
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          {
+            echo "files<<EOF"
+            cat digest-files.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Validate Slack configuration
+        if: steps.changed.outputs.count != '0' && inputs.dry_run != 'true'
+        run: |
+          if [ -z "${POLICY_TRACKER_SLACK_TOKEN}" ]; then
+            echo "Missing required configuration: POLICY_TRACKER_SLACK_TOKEN" >&2
+            exit 1
+          fi
+
+      - name: Preview Slack message
+        if: steps.changed.outputs.count != '0' && inputs.dry_run == 'true'
+        env:
+          CHANGED_DIGEST_FILES: ${{ steps.changed.outputs.files }}
+        run: bun run scripts/send-digest-slack.ts --dry-run
+
+      - name: Send Slack DM
+        if: steps.changed.outputs.count != '0' && inputs.dry_run != 'true'
+        env:
+          CHANGED_DIGEST_FILES: ${{ steps.changed.outputs.files }}
+        run: bun run scripts/send-digest-slack.ts
