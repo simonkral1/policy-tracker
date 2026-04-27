@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "content/**"
+  workflow_run:
+    workflows: [auto-merge]
+    types: [completed]
   workflow_dispatch:
     inputs:
       files:
@@ -34,7 +37,9 @@ permissions:
 jobs:
   slack-digest:
     name: slack-digest
-    if: ${{ vars.POLICY_TRACKER_SLACK_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: >-
+      (vars.POLICY_TRACKER_SLACK_ENABLED == 'true' || github.event_name == 'workflow_dispatch') &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     env:
       POLICY_TRACKER_SITE_URL: ${{ vars.POLICY_TRACKER_SITE_URL }}
@@ -65,6 +70,13 @@ jobs:
             printf '%s\n' "${INPUT_FILES}" | tr ',' '\n' | sed '/^[[:space:]]*$/d' > digest-files.txt
           elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
             find content -type f -name '*.md' | sort | tail -n 3 > digest-files.txt
+          elif [ "${GITHUB_EVENT_NAME}" = "workflow_run" ]; then
+            latest_day="$(find content -mindepth 1 -maxdepth 1 -type d -name '????-??-??' | sort | tail -n 1)"
+            if [ -n "${latest_day}" ]; then
+              find "${latest_day}" -type f -name '*.md' | sort > digest-files.txt
+            else
+              touch digest-files.txt
+            fi
           elif [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
             git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- content > digest-files.txt
           else

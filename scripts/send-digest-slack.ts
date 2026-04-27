@@ -14,7 +14,6 @@ interface DigestSummary {
   periodStart?: string;
   periodEnd?: string;
   sourcesCited?: number;
-  editorNote?: string;
   snippet: string;
   highlights: string[];
   siteUrl: string;
@@ -108,6 +107,17 @@ function extractHighlights(body: string): string[] {
   return titles;
 }
 
+function buildPublicSnippet(body: string, highlights: string[]): string {
+  if (highlights.length > 0) {
+    return `Top items: ${highlights.slice(0, 3).join("; ")}.`;
+  }
+
+  const stripped = stripMarkdown(body);
+  return stripped.length > 280
+    ? `${stripped.slice(0, 277).trimEnd()}...`
+    : stripped;
+}
+
 function collectInputFiles(argv: string[]): { dryRun: boolean; files: string[] } {
   const dryRun = argv.includes("--dry-run");
   const files = argv
@@ -152,10 +162,7 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
     return null;
   }
 
-  const snippetSource =
-    typeof data.editor_note === "string" && data.editor_note.trim().length > 0
-      ? data.editor_note.trim()
-      : stripMarkdown(parsed.content).slice(0, 280).trim();
+  const highlights = extractHighlights(parsed.content);
 
   return {
     file,
@@ -166,13 +173,8 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
     periodEnd: coerceIsoDate(data.period_end),
     sourcesCited:
       typeof data.sources_cited === "number" ? data.sources_cited : undefined,
-    editorNote:
-      typeof data.editor_note === "string" ? data.editor_note.trim() : undefined,
-    snippet:
-      snippetSource.length > 280
-        ? `${snippetSource.slice(0, 277).trimEnd()}...`
-        : snippetSource,
-    highlights: extractHighlights(parsed.content),
+    snippet: buildPublicSnippet(parsed.content, highlights),
+    highlights,
     siteUrl: resolveSiteUrl(type, date),
   };
 }
@@ -241,7 +243,7 @@ function buildSlackBlocks(digests: DigestSummary[]): unknown[] {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `${meta.join(" · ")}\n*<${digest.siteUrl}|${digest.title}>*\n${digest.editorNote ?? digest.snippet}${highlights}`,
+        text: `${meta.join(" · ")}\n*<${digest.siteUrl}|${digest.title}>*\n${digest.snippet}${highlights}`,
       },
     });
     blocks.push({
