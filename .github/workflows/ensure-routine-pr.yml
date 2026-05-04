@@ -1,0 +1,114 @@
+name: ensure-routine-pr
+
+on:
+  push:
+    branches:
+      - "claude/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ensure-pr:
+    name: ensure Routine branch has a PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Routine branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract PR metadata
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main:refs/remotes/origin/main
+
+          digest_file="$(
+            git diff --name-only origin/main...HEAD -- content |
+              awk '/^content\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/.*\.md$/ { print; exit }'
+          )"
+
+          if [ -z "$digest_file" ]; then
+            digest_file="$(
+              git show --name-only --format= HEAD -- content |
+                awk '/^content\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/.*\.md$/ { print; exit }'
+            )"
+          fi
+
+          if [ -z "$digest_file" ]; then
+            echo "has_digest=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          date_dir="$(cut -d / -f 2 <<< "$digest_file")"
+          file_name="$(basename "$digest_file")"
+
+          case "$file_name" in
+            legislative-digest.md) digest_type="legislative digest" ;;
+            newsletter-digest.md) digest_type="newsletter digest" ;;
+            paper-tracking.md) digest_type="paper tracking digest" ;;
+            *) digest_type="digest" ;;
+          esac
+
+          editor_note="$(
+            awk '
+              /^---$/ { frontmatter++; next }
+              frontmatter == 1 && /^editor_note:[[:space:]]*/ {
+                sub(/^editor_note:[[:space:]]*/, "")
+                gsub(/^"|"$/, "")
+                print
+                exit
+              }
+            ' "$digest_file"
+          )"
+
+          if [ -z "$editor_note" ]; then
+            editor_note="Automated Routine output from ${GITHUB_REF_NAME}."
+          fi
+
+          {
+            echo "has_digest=true"
+            echo "title=${digest_type} — ${date_dir}"
+            echo "body<<EOF"
+            echo "$editor_note"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open PR if missing
+        if: steps.metadata.outputs.has_digest == 'true'
+        uses: actions/github-script@v7
+        env:
+          PR_TITLE: ${{ steps.metadata.outputs.title }}
+          PR_BODY: ${{ steps.metadata.outputs.body }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branch = context.ref.replace('refs/heads/', '');
+
+            const { data: existing } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${branch}`,
+            });
+
+            if (existing.length > 0) {
+              core.info(`PR already exists for ${branch}: #${existing[0].number}`);
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner,
+              repo,
+              base: 'main',
+              head: branch,
+              title: process.env.PR_TITLE,
+              body: process.env.PR_BODY,
+            });
+
+            core.info(`Created PR #${pr.number}: ${pr.html_url}`);
