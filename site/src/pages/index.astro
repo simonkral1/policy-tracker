@@ -74,9 +74,11 @@ const topThree = extractTopThree(latestLegislative);
 const fallbackNote = latestLegislative?.data.editor_note ?? null;
 const hasAnyDigest = Boolean(latestLegislative || latestNewsletter || latestPapers || latestNews);
 
-const latestCards = [latestLegislative, latestNewsletter, latestPapers, latestNews].filter(
-  Boolean,
-) as Array<CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers"> | CollectionEntry<"news">>;
+const latestCards = (
+  [latestLegislative, latestNewsletter, latestPapers, latestNews].filter(Boolean) as Array<
+    CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers"> | CollectionEntry<"news">
+  >
+).sort(byDateDesc);
 ---
 
 <BaseLayout title="SaferAI Policy Tracker" description="Weekly digests of global AI-policy activity, curated by SaferAI.">
