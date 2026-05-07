@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 
-type DigestType = "legislative" | "newsletter" | "papers";
+type DigestType = "legislative" | "newsletter" | "papers" | "news";
 
 interface DigestSummary {
   file: string;
@@ -32,12 +32,14 @@ const TYPE_LABEL: Record<DigestType, string> = {
   legislative: "Legislative",
   newsletter: "Newsletter",
   papers: "Papers",
+  news: "News",
 };
 
 const TYPE_ORDER: Record<DigestType, number> = {
   legislative: 0,
   newsletter: 1,
   papers: 2,
+  news: 3,
 };
 
 const REPO_ROOT = path.resolve(import.meta.dir, "..");
@@ -155,7 +157,10 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
   const date = coerceIsoDate(data.date);
 
   if (
-    (type !== "legislative" && type !== "newsletter" && type !== "papers") ||
+    (type !== "legislative" &&
+      type !== "newsletter" &&
+      type !== "papers" &&
+      type !== "news") ||
     typeof title !== "string" ||
     !date
   ) {

@@ -1,0 +1,112 @@
+version: 1
+updated: 2026-05-07
+topics:
+  - id: geopolitics-ai
+    name: Geopolitics & AI
+    description: US-China dynamics, EU regulation, middle powers, and international AI governance.
+    priority: core
+    search_hints:
+      - AI geopolitics US China compute controls
+      - AI governance UK India UAE Singapore South Korea
+      - international AI governance summit treaty standards
+
+  - id: safety-risk-management
+    name: Safety & Risk management
+    description: Alignment research, evaluations, red-teaming, incident reports, and risk frameworks.
+    priority: core
+    search_hints:
+      - AI safety evaluations red teaming incident report
+      - frontier model risk framework safety case
+      - alignment research model behavior evaluation
+
+  - id: capability-uplifts
+    name: Capability uplifts
+    description: Model releases, benchmark jumps, emergent behaviors, and hardware breakthroughs.
+    priority: core
+    search_hints:
+      - frontier model release benchmark results
+      - AI hardware accelerator compute breakthrough
+      - emergent behavior model capability evaluation
+
+  - id: regulatory-developments
+    name: Regulatory developments
+    description: Laws, executive orders, standards bodies, and enforcement actions.
+    priority: core
+    search_hints:
+      - AI regulation executive order law enforcement action
+      - NIST ISO AI standard risk management
+      - AI Act implementation enforcement standards
+
+  - id: hype-trends
+    name: Hype & trends
+    description: Viral AI narratives, investment flows, and over- or under-hyped technologies worth tracking.
+    priority: secondary
+    search_hints:
+      - AI investment funding trend bubble
+      - viral AI narrative agent trend
+      - overhyped underhyped AI technology
+
+sources:
+  - name: Reuters AI
+    url: https://www.reuters.com/technology/artificial-intelligence/
+    rss: null
+    categories: [geopolitics-ai, capability-uplifts, regulatory-developments, hype-trends]
+    priority: core
+    last_verified: 2026-05-07
+    notes: High-signal general news wire for AI policy, markets, national-security, and company moves.
+
+  - name: Associated Press AI
+    url: https://apnews.com/hub/artificial-intelligence
+    rss: null
+    categories: [geopolitics-ai, regulatory-developments, hype-trends]
+    priority: core
+    last_verified: 2026-05-07
+    notes: General news wire useful for fast-moving public narratives and government announcements.
+
+  - name: MIT Technology Review AI
+    url: https://www.technologyreview.com/topic/artificial-intelligence/
+    rss: null
+    categories: [safety-risk-management, capability-uplifts, hype-trends]
+    priority: core
+    last_verified: 2026-05-07
+    notes: Technical and societal analysis; useful for separating durable trends from hype.
+
+  - name: NIST AI Risk Management Framework
+    url: https://www.nist.gov/itl/ai-risk-management-framework
+    rss: null
+    categories: [safety-risk-management, regulatory-developments]
+    priority: core
+    last_verified: 2026-05-07
+    notes: Standards and risk-management updates relevant to US and international frameworks.
+
+  - name: European Commission AI Office
+    url: https://digital-strategy.ec.europa.eu/en/policies/ai-office
+    rss: null
+    categories: [geopolitics-ai, regulatory-developments, safety-risk-management]
+    priority: core
+    last_verified: 2026-05-07
+    notes: EU AI Act implementation and GPAI/systemic-risk supervision.
+
+  - name: AI Incident Database
+    url: https://incidentdatabase.ai/
+    rss: null
+    categories: [safety-risk-management, hype-trends]
+    priority: core
+    last_verified: 2026-05-07
+    notes: Incident reports and taxonomy for real-world harm and near-miss tracking.
+
+  - name: The Verge AI
+    url: https://www.theverge.com/ai-artificial-intelligence
+    rss: null
+    categories: [capability-uplifts, hype-trends, regulatory-developments]
+    priority: secondary
+    last_verified: 2026-05-07
+    notes: Useful for model releases, product narratives, and viral AI discourse.
+
+  - name: TechCrunch AI
+    url: https://techcrunch.com/category/artificial-intelligence/
+    rss: null
+    categories: [capability-uplifts, hype-trends]
+    priority: secondary
+    last_verified: 2026-05-07
+    notes: Startup and investment signal; treat claims about capability carefully.

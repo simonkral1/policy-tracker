@@ -22,6 +22,7 @@ import {
   newslettersFileSchema,
   papersFileSchema,
   legislativeFileSchema,
+  newsUpdatesFileSchema,
   peopleFileSchema,
   eventsFileSchema,
 } from "../sources/schema.ts";
@@ -55,6 +56,7 @@ const FILES: FileSpec[] = [
   { file: "newsletters.yaml", schema: newslettersFileSchema },
   { file: "papers.yaml", schema: papersFileSchema },
   { file: "legislative.yaml", schema: legislativeFileSchema },
+  { file: "news-updates.yaml", schema: newsUpdatesFileSchema },
   { file: "people.yaml", schema: peopleFileSchema },
   { file: "events.yaml", schema: eventsFileSchema },
 ];

@@ -5,7 +5,8 @@ import type { CollectionEntry } from "astro:content";
 type AnyDigest =
   | CollectionEntry<"legislative">
   | CollectionEntry<"newsletter">
-  | CollectionEntry<"papers">;
+  | CollectionEntry<"papers">
+  | CollectionEntry<"news">;
 
 interface Props {
   entry: AnyDigest;
