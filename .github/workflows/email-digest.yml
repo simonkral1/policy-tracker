@@ -59,7 +59,7 @@ jobs:
           if [ -n "${INPUT_FILES}" ]; then
             printf '%s\n' "${INPUT_FILES}" | tr ',' '\n' | sed '/^[[:space:]]*$/d' > digest-files.txt
           elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            find content -type f -name '*.md' | sort | tail -n 3 > digest-files.txt
+            find content -type f -name '*.md' | sort | tail -n 4 > digest-files.txt
           elif [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
             git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- content > digest-files.txt
           else

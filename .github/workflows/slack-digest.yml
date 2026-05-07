@@ -69,7 +69,7 @@ jobs:
           if [ -n "${INPUT_FILES}" ]; then
             printf '%s\n' "${INPUT_FILES}" | tr ',' '\n' | sed '/^[[:space:]]*$/d' > digest-files.txt
           elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            find content -type f -name '*.md' | sort | tail -n 3 > digest-files.txt
+            find content -type f -name '*.md' | sort | tail -n 4 > digest-files.txt
           elif [ "${GITHUB_EVENT_NAME}" = "workflow_run" ]; then
             latest_day="$(find content -mindepth 1 -maxdepth 1 -type d -name '????-??-??' | sort | tail -n 1)"
             if [ -n "${latest_day}" ]; then

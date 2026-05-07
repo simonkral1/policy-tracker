@@ -5,18 +5,20 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 const base = import.meta.env.BASE_URL || "/";
 
-const [legislative, newsletter, papers] = await Promise.all([
+const [legislative, newsletter, papers, news] = await Promise.all([
   getCollection("legislative"),
   getCollection("newsletter"),
   getCollection("papers"),
+  getCollection("news"),
 ]);
 
 type AnyDigest =
   | CollectionEntry<"legislative">
   | CollectionEntry<"newsletter">
-  | CollectionEntry<"papers">;
+  | CollectionEntry<"papers">
+  | CollectionEntry<"news">;
 
-const all: AnyDigest[] = [...legislative, ...newsletter, ...papers].sort(
+const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news].sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
 );
 
@@ -25,6 +27,7 @@ const filters = [
   { id: "legislative", label: "Legislative" },
   { id: "newsletter", label: "Newsletter" },
   { id: "papers", label: "Papers" },
+  { id: "news", label: "News" },
 ];
 
 // Pagefind UI script path (served from /pagefind/ after `bunx pagefind --site dist`)

@@ -3,10 +3,10 @@
  * validate-content.ts
  *
  * Walks `content/YYYY-MM-DD/` directories and validates every `*.md` digest:
- *   - frontmatter has date (ISO), type (legislative|newsletter|papers), non-empty title
+ *   - frontmatter has date (ISO), type (legislative|newsletter|papers|news), non-empty title
  *   - optional period_start / period_end are ISO, sources_cited is a number, editor_note is a string
  *   - directory name matches frontmatter date
- *   - filename matches type (legislative-digest.md, newsletter-digest.md, paper-tracking.md)
+ *   - filename matches type (legislative-digest.md, newsletter-digest.md, paper-tracking.md, news-updates.md)
  *   - body ≥ 50 stripped chars
  *   - legislative digests contain all five required section headings
  *
@@ -44,6 +44,7 @@ const TYPE_TO_FILENAME: Record<string, string> = {
   legislative: "legislative-digest.md",
   newsletter: "newsletter-digest.md",
   papers: "paper-tracking.md",
+  news: "news-updates.md",
 };
 
 const VALID_TYPES = new Set(Object.keys(TYPE_TO_FILENAME));
@@ -134,7 +135,7 @@ async function validateMarkdownFile(
   const typeVal = fm.type;
   if (typeof typeVal !== "string" || !VALID_TYPES.has(typeVal)) {
     errors.push(
-      `frontmatter.type must be one of legislative|newsletter|papers (got: ${String(typeVal)})`,
+      `frontmatter.type must be one of legislative|newsletter|papers|news (got: ${String(typeVal)})`,
     );
   } else {
     const expected = TYPE_TO_FILENAME[typeVal];

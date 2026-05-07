@@ -84,6 +84,39 @@ export const legislativeFileSchema = z.object({
   targets: z.array(legislativeTargetSchema),
 });
 
+export const newsUpdateTopicIdSchema = z.enum([
+  "geopolitics-ai",
+  "safety-risk-management",
+  "capability-uplifts",
+  "regulatory-developments",
+  "hype-trends",
+]);
+
+export const newsUpdateTopicSchema = z.object({
+  id: newsUpdateTopicIdSchema,
+  name: z.string(),
+  description: z.string(),
+  priority,
+  search_hints: z.array(z.string()),
+});
+
+export const newsUpdateSourceSchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+  rss: z.string().url().nullable(),
+  categories: z.array(newsUpdateTopicIdSchema),
+  priority,
+  last_verified: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  notes: z.string().optional(),
+});
+
+export const newsUpdatesFileSchema = z.object({
+  version: z.number(),
+  updated: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  topics: z.array(newsUpdateTopicSchema),
+  sources: z.array(newsUpdateSourceSchema),
+});
+
 export const personSchema = z.object({
   name: z.string(),
   handle: z.string(),
@@ -119,5 +152,6 @@ export type Newsletter = z.infer<typeof newsletterSchema>;
 export type NewslettersFile = z.infer<typeof newslettersFileSchema>;
 export type PapersFile = z.infer<typeof papersFileSchema>;
 export type LegislativeFile = z.infer<typeof legislativeFileSchema>;
+export type NewsUpdatesFile = z.infer<typeof newsUpdatesFileSchema>;
 export type PeopleFile = z.infer<typeof peopleFileSchema>;
 export type EventsFile = z.infer<typeof eventsFileSchema>;

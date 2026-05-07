@@ -30,9 +30,11 @@
   --chip-legislative: var(--brand-blue-ink);
   --chip-newsletter: var(--brand-purple);
   --chip-papers: var(--brand-teal);
+  --chip-news: var(--brand-rust);
   --chip-legislative-bg: var(--brand-pale-blue);
   --chip-newsletter-bg: #f4e4f7;
   --chip-papers-bg: #e3ebea;
+  --chip-news-bg: var(--brand-pale-pink);
 
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -62,9 +64,11 @@
     --chip-legislative: #e8a0a3;
     --chip-newsletter: #d69fe8;
     --chip-papers: #9ec2c0;
+    --chip-news: #e8a0a3;
     --chip-legislative-bg: #3a1f21;
     --chip-newsletter-bg: #2e1434;
     --chip-papers-bg: #163230;
+    --chip-news-bg: #3a1f21;
   }
 }
 
@@ -81,9 +85,11 @@
   --chip-legislative: #e8a0a3;
   --chip-newsletter: #d69fe8;
   --chip-papers: #9ec2c0;
+  --chip-news: #e8a0a3;
   --chip-legislative-bg: #3a1f21;
   --chip-newsletter-bg: #2e1434;
   --chip-papers-bg: #163230;
+  --chip-news-bg: #3a1f21;
 }
 
 /* ---------- reset ---------- */
@@ -448,6 +454,11 @@ nav, .chip, .chrome, .filter-chips, .footer, button, input, select, textarea,
   color: var(--chip-papers);
   background: var(--chip-papers-bg);
   border-color: color-mix(in srgb, var(--chip-papers) 25%, transparent);
+}
+.chip--news {
+  color: var(--chip-news);
+  background: var(--chip-news-bg);
+  border-color: color-mix(in srgb, var(--chip-news) 25%, transparent);
 }
 
 /* ---------- filter chips ---------- */

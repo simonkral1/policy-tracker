@@ -10,10 +10,11 @@ function withBase(path: string): string {
   return `${b}${p}` || "/";
 }
 
-const [legislative, newsletter, papers] = await Promise.all([
+const [legislative, newsletter, papers, news] = await Promise.all([
   getCollection("legislative"),
   getCollection("newsletter"),
   getCollection("papers"),
+  getCollection("news"),
 ]);
 
 function byDateDesc<T extends { data: { date: Date } }>(a: T, b: T): number {
@@ -23,10 +24,12 @@ function byDateDesc<T extends { data: { date: Date } }>(a: T, b: T): number {
 const sortedLegislative = [...legislative].sort(byDateDesc);
 const sortedNewsletter = [...newsletter].sort(byDateDesc);
 const sortedPapers = [...papers].sort(byDateDesc);
+const sortedNews = [...news].sort(byDateDesc);
 
 const latestLegislative = sortedLegislative[0];
 const latestNewsletter = sortedNewsletter[0];
 const latestPapers = sortedPapers[0];
+const latestNews = sortedNews[0];
 
 // Pull up to three item titles from the most recent legislative digest.
 // Preference order: ACT NOW → ON THE RADAR → PIPELINE WATCH. Stops at 3.
@@ -69,11 +72,11 @@ function extractTopThree(
 
 const topThree = extractTopThree(latestLegislative);
 const fallbackNote = latestLegislative?.data.editor_note ?? null;
-const hasAnyDigest = Boolean(latestLegislative || latestNewsletter || latestPapers);
+const hasAnyDigest = Boolean(latestLegislative || latestNewsletter || latestPapers || latestNews);
 
-const latestCards = [latestLegislative, latestNewsletter, latestPapers].filter(
+const latestCards = [latestLegislative, latestNewsletter, latestPapers, latestNews].filter(
   Boolean,
-) as Array<CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers">>;
+) as Array<CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers"> | CollectionEntry<"news">>;
 ---
 
 <BaseLayout title="SaferAI Policy Tracker" description="Weekly digests of global AI-policy activity, curated by SaferAI.">
@@ -82,8 +85,8 @@ const latestCards = [latestLegislative, latestNewsletter, latestPapers].filter(
     <div class="kicker">SaferAI · Weekly</div>
     <h1>Policy Tracker</h1>
     <p class="tagline">
-      Weekly reading on legislative, research, and newsletter signals in global
-      AI policy — curated by the SaferAI policy team.
+      Weekly reading on legislative, news, research, and newsletter signals in
+      global AI policy — curated by the SaferAI policy team.
     </p>
   </section>
 

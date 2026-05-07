@@ -6,16 +6,18 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 type AnyDigest =
   | CollectionEntry<"legislative">
   | CollectionEntry<"newsletter">
-  | CollectionEntry<"papers">;
+  | CollectionEntry<"papers">
+  | CollectionEntry<"news">;
 
 export async function getStaticPaths() {
-  const [legislative, newsletter, papers] = await Promise.all([
+  const [legislative, newsletter, papers, news] = await Promise.all([
     getCollection("legislative"),
     getCollection("newsletter"),
     getCollection("papers"),
+    getCollection("news"),
   ]);
 
-  const all: AnyDigest[] = [...legislative, ...newsletter, ...papers];
+  const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news];
 
   return all.map((entry) => ({
     params: { slug: `${entry.data.type}/${entry.id}` },

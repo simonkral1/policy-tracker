@@ -31,8 +31,16 @@ const papers = defineCollection({
   }),
 });
 
+const news = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
+  schema: baseSchema.extend({
+    type: z.literal("news"),
+  }),
+});
+
 export const collections = {
   legislative,
   newsletter,
   papers,
+  news,
 };

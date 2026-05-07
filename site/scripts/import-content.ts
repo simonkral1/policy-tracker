@@ -10,6 +10,7 @@
  *   legislative-digest.md -> src/content/legislative/<date>.md
  *   newsletter-digest.md  -> src/content/newsletter/<date>.md
  *   paper-tracking.md     -> src/content/papers/<date>.md
+ *   news-updates.md       -> src/content/news/<date>.md
  *
  * Safe if ../content does not exist or has no dated folders.
  */
@@ -26,13 +27,14 @@ const SITE_DIR = resolve(__dirname, "..");
 const CONTENT_SRC = resolve(SITE_DIR, "..", "content");
 const CONTENT_DST = resolve(SITE_DIR, "src", "content");
 
-const TYPES = ["legislative", "newsletter", "papers"] as const;
+const TYPES = ["legislative", "newsletter", "papers", "news"] as const;
 type DigestType = (typeof TYPES)[number];
 
 const FILE_MAP: Record<string, DigestType> = {
   "legislative-digest.md": "legislative",
   "newsletter-digest.md": "newsletter",
   "paper-tracking.md": "papers",
+  "news-updates.md": "news",
 };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
