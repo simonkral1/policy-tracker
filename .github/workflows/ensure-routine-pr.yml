@@ -9,19 +9,143 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
-  ensure-pr:
-    name: ensure Routine branches have PRs
+  discover:
+    name: discover Routine branches needing action
     runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.discover.outputs.branches }}
     steps:
-      - name: Open missing Routine PRs
+      - name: Discover branches
+        id: discover
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
+
+            async function paginate(method, params) {
+              const items = [];
+              for await (const response of github.paginate.iterator(method, params)) {
+                items.push(...response.data);
+              }
+              return items;
+            }
+
+            async function listRoutineBranches() {
+              const branches = await paginate(github.rest.repos.listBranches, {
+                owner,
+                repo,
+                per_page: 100,
+              });
+              return branches
+                .map((branch) => branch.name)
+                .filter((name) => name.startsWith("claude/"));
+            }
+
+            async function listPullRequestsByBranch() {
+              const prs = await paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: "all",
+                per_page: 100,
+              });
+
+              const byBranch = new Map();
+              for (const pr of prs) {
+                if (pr.head.repo?.full_name !== `${owner}/${repo}`) continue;
+                const existing = byBranch.get(pr.head.ref);
+                if (!existing || new Date(pr.created_at) > new Date(existing.created_at)) {
+                  byBranch.set(pr.head.ref, pr);
+                }
+              }
+              return byBranch;
+            }
+
+            async function digestFileChanged(branch) {
+              const { data: comparison } = await github.rest.repos.compareCommitsWithBasehead({
+                owner,
+                repo,
+                basehead: `main...${branch}`,
+              });
+
+              if (comparison.ahead_by === 0) return false;
+
+              for (const file of comparison.files ?? []) {
+                if (
+                  file.status !== "removed" &&
+                  /^content\/\d{4}-\d{2}-\d{2}\/[^/]+\.md$/.test(file.filename)
+                ) {
+                  try {
+                    await github.rest.repos.getContent({
+                      owner,
+                      repo,
+                      path: file.filename,
+                      ref: "main",
+                    });
+                    core.info(`${branch}: ${file.filename} is already on main; skipping.`);
+                    return false;
+                  } catch (error) {
+                    if (error.status === 404) return true;
+                    throw error;
+                  }
+                }
+              }
+
+              return false;
+            }
+
+            const prsByBranch = await listPullRequestsByBranch();
+            const candidates =
+              context.eventName === "push"
+                ? [context.ref.replace("refs/heads/", "")]
+                : await listRoutineBranches();
+
+            const branches = [];
+            for (const branch of candidates) {
+              if (!branch.startsWith("claude/")) continue;
+
+              const pr = prsByBranch.get(branch);
+              if (pr?.state === "open") {
+                branches.push(branch);
+                continue;
+              }
+
+              if (pr?.state === "closed") {
+                core.info(`${branch}: PR #${pr.number} is already closed; skipping.`);
+                continue;
+              }
+
+              try {
+                if (await digestFileChanged(branch)) branches.push(branch);
+              } catch (error) {
+                core.warning(`${branch}: could not inspect branch: ${error.message}`);
+              }
+            }
+
+            core.info(`Routine branches needing action: ${branches.join(", ") || "(none)"}`);
+            core.setOutput("branches", JSON.stringify(branches));
+
+  ensure-pr:
+    name: validate and merge Routine branch
+    needs: discover
+    if: needs.discover.outputs.branches != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        branch: ${{ fromJSON(needs.discover.outputs.branches) }}
+    steps:
+      - name: Find or open PR
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const branch = "${{ matrix.branch }}";
 
             const digestTypes = new Map([
               ["legislative-digest.md", "legislative digest"],
@@ -45,49 +169,22 @@ jobs:
               return stripQuotes(noteLine.replace(/^editor_note:\s*/, ""));
             }
 
-            async function listRoutineBranches() {
-              const branches = [];
-              for await (const response of github.paginate.iterator(github.rest.repos.listBranches, {
-                owner,
-                repo,
-                per_page: 100,
-              })) {
-                branches.push(
-                  ...response.data
-                    .map((branch) => branch.name)
-                    .filter((name) => name.startsWith("claude/")),
-                );
-              }
-              return branches;
-            }
-
-            async function prAlreadyExists(branch) {
+            async function findOpenPr() {
               const { data: prs } = await github.rest.pulls.list({
                 owner,
                 repo,
-                state: "all",
+                state: "open",
                 head: `${owner}:${branch}`,
               });
-
-              if (prs.length > 0) {
-                core.info(`PR already exists for ${branch}: #${prs[0].number} (${prs[0].state})`);
-                return true;
-              }
-
-              return false;
+              return prs[0] ?? null;
             }
 
-            async function findDigestFile(branch) {
+            async function findDigestFile() {
               const { data: comparison } = await github.rest.repos.compareCommitsWithBasehead({
                 owner,
                 repo,
                 basehead: `main...${branch}`,
               });
-
-              if (comparison.ahead_by === 0) {
-                core.info(`${branch} has no commits ahead of main; skipping.`);
-                return null;
-              }
 
               return (comparison.files ?? []).find((file) =>
                 file.status !== "removed" &&
@@ -110,33 +207,26 @@ jobs:
               return Buffer.from(data.content, "base64").toString("utf8");
             }
 
-            async function ensurePr(branch) {
-              if (!branch.startsWith("claude/")) {
-                core.info(`${branch} is not a Routine branch; skipping.`);
-                return;
-              }
+            const existing = await findOpenPr();
+            if (existing) {
+              core.info(`Using existing PR #${existing.number}: ${existing.html_url}`);
+              core.setOutput("number", String(existing.number));
+              core.setOutput("title", existing.title);
+              return;
+            }
 
-              if (await prAlreadyExists(branch)) return;
+            const digestFile = await findDigestFile();
+            if (!digestFile) {
+              throw new Error(`${branch} has no digest markdown changes against main`);
+            }
 
-              let digestFile;
-              try {
-                digestFile = await findDigestFile(branch);
-              } catch (error) {
-                core.warning(`Could not compare ${branch} with main: ${error.message}`);
-                return;
-              }
+            const [, dateDir, fileName] = digestFile.split("/");
+            const digestType = digestTypes.get(fileName) ?? "digest";
+            const markdown = await readFileAtRef(digestFile, branch);
+            const editorNote = extractEditorNote(markdown);
+            const body = editorNote || `Automated Routine output from ${branch}.`;
 
-              if (!digestFile) {
-                core.info(`${branch} has no digest markdown changes; skipping.`);
-                return;
-              }
-
-              const [, dateDir, fileName] = digestFile.split("/");
-              const digestType = digestTypes.get(fileName) ?? "digest";
-              const markdown = await readFileAtRef(digestFile, branch);
-              const editorNote = extractEditorNote(markdown);
-              const body = editorNote || `Automated Routine output from ${branch}.`;
-
+            try {
               const { data: pr } = await github.rest.pulls.create({
                 owner,
                 repo,
@@ -145,15 +235,61 @@ jobs:
                 title: `${digestType} — ${dateDir}`,
                 body,
               });
-
               core.info(`Created PR #${pr.number}: ${pr.html_url}`);
+              core.setOutput("number", String(pr.number));
+              core.setOutput("title", pr.title);
+            } catch (error) {
+              if (error.status !== 422) throw error;
+
+              const raced = await findOpenPr();
+              if (!raced) throw error;
+
+              core.info(`PR appeared during create attempt; using #${raced.number}: ${raced.html_url}`);
+              core.setOutput("number", String(raced.number));
+              core.setOutput("title", raced.title);
             }
 
-            const branches = context.eventName === "push"
-              ? [context.ref.replace("refs/heads/", "")]
-              : await listRoutineBranches();
+      - name: Checkout Routine branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
 
-            core.info(`Checking ${branches.length} Routine branch(es).`);
-            for (const branch of branches) {
-              await ensurePr(branch);
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Validate sources
+        run: bun run validate:sources
+
+      - name: Validate content
+        run: bun run validate:content
+
+      - name: Squash-merge PR
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_TITLE: ${{ steps.pr.outputs.title }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = Number(process.env.PR_NUMBER);
+
+            if (!pull_number) throw new Error("Missing PR number");
+
+            try {
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number,
+                merge_method: "squash",
+                commit_title: process.env.PR_TITLE,
+              });
+              core.info(`Merged PR #${pull_number}`);
+            } catch (error) {
+              if (error.status === 405 || error.status === 409) {
+                core.warning(`PR #${pull_number} is not mergeable yet: ${error.message}`);
+              }
+              throw error;
             }
