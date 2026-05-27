@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -207,17 +208,18 @@ jobs:
               return Buffer.from(data.content, "base64").toString("utf8");
             }
 
+            const digestFile = await findDigestFile();
+            if (!digestFile) {
+              throw new Error(`${branch} has no digest markdown changes against main`);
+            }
+
             const existing = await findOpenPr();
             if (existing) {
               core.info(`Using existing PR #${existing.number}: ${existing.html_url}`);
               core.setOutput("number", String(existing.number));
               core.setOutput("title", existing.title);
+              core.setOutput("digest_file", digestFile);
               return;
-            }
-
-            const digestFile = await findDigestFile();
-            if (!digestFile) {
-              throw new Error(`${branch} has no digest markdown changes against main`);
             }
 
             const [, dateDir, fileName] = digestFile.split("/");
@@ -238,6 +240,7 @@ jobs:
               core.info(`Created PR #${pr.number}: ${pr.html_url}`);
               core.setOutput("number", String(pr.number));
               core.setOutput("title", pr.title);
+              core.setOutput("digest_file", digestFile);
             } catch (error) {
               if (error.status !== 422) throw error;
 
@@ -247,6 +250,7 @@ jobs:
               core.info(`PR appeared during create attempt; using #${raced.number}: ${raced.html_url}`);
               core.setOutput("number", String(raced.number));
               core.setOutput("title", raced.title);
+              core.setOutput("digest_file", digestFile);
             }
 
       - name: Checkout Routine branch
@@ -293,3 +297,20 @@ jobs:
               }
               throw error;
             }
+
+      - name: Dispatch site deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref main
+
+      - name: Dispatch Slack digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIGEST_FILE: ${{ steps.pr.outputs.digest_file }}
+        run: gh workflow run slack-digest.yml --ref main -f files="${DIGEST_FILE}" -f dry_run=false
+
+      - name: Dispatch email digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIGEST_FILE: ${{ steps.pr.outputs.digest_file }}
+        run: gh workflow run email-digest.yml --ref main -f files="${DIGEST_FILE}" -f dry_run=false
