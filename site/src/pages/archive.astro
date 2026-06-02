@@ -5,25 +5,28 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 const base = import.meta.env.BASE_URL || "/";
 
-const [legislative, newsletter, papers, news] = await Promise.all([
+const [legislative, newsletter, papers, news, weekly] = await Promise.all([
   getCollection("legislative"),
   getCollection("newsletter"),
   getCollection("papers"),
   getCollection("news"),
+  getCollection("weekly"),
 ]);
 
 type AnyDigest =
   | CollectionEntry<"legislative">
   | CollectionEntry<"newsletter">
   | CollectionEntry<"papers">
-  | CollectionEntry<"news">;
+  | CollectionEntry<"news">
+  | CollectionEntry<"weekly">;
 
-const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news].sort(
+const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news, ...weekly].sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
 );
 
 const filters = [
   { id: "all", label: "All" },
+  { id: "weekly", label: "Weekly" },
   { id: "legislative", label: "Legislative" },
   { id: "newsletter", label: "Newsletter" },
   { id: "papers", label: "Papers" },

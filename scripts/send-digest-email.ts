@@ -5,7 +5,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import nodemailer from "nodemailer";
 
-type DigestType = "legislative" | "newsletter" | "papers" | "news";
+type DigestType = "legislative" | "newsletter" | "papers" | "news" | "weekly";
 
 interface DigestSummary {
   file: string;
@@ -29,6 +29,7 @@ interface TypeColorSet {
 }
 
 const TYPE_LABEL: Record<DigestType, string> = {
+  weekly: "Weekly",
   legislative: "Legislative",
   newsletter: "Newsletter",
   papers: "Papers",
@@ -36,13 +37,19 @@ const TYPE_LABEL: Record<DigestType, string> = {
 };
 
 const TYPE_ORDER: Record<DigestType, number> = {
-  legislative: 0,
-  newsletter: 1,
-  papers: 2,
-  news: 3,
+  weekly: 0,
+  legislative: 1,
+  newsletter: 2,
+  papers: 3,
+  news: 4,
 };
 
 const TYPE_COLORS: Record<DigestType, TypeColorSet> = {
+  weekly: {
+    text: "#2f3a57",
+    bg: "#e8ebf4",
+    border: "#b9c2d8",
+  },
   legislative: {
     text: "#3d6690",
     bg: "#e1e2ef",
@@ -206,7 +213,8 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
     (type !== "legislative" &&
       type !== "newsletter" &&
       type !== "papers" &&
-      type !== "news") ||
+      type !== "news" &&
+      type !== "weekly") ||
     typeof title !== "string" ||
     !dateValue
   ) {

@@ -38,9 +38,19 @@ const news = defineCollection({
   }),
 });
 
+// The consolidated weekly digest — the active digest going forward. The other
+// four collections remain so the historical archive keeps rendering.
+const weekly = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/weekly" }),
+  schema: baseSchema.extend({
+    type: z.literal("weekly"),
+  }),
+});
+
 export const collections = {
   legislative,
   newsletter,
   papers,
   news,
+  weekly,
 };

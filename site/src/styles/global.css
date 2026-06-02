@@ -31,10 +31,12 @@
   --chip-newsletter: var(--brand-purple);
   --chip-papers: var(--brand-teal);
   --chip-news: var(--brand-rust);
+  --chip-weekly: #2f3a57;             /* flagship: deep SaferAI ink */
   --chip-legislative-bg: var(--brand-pale-blue);
   --chip-newsletter-bg: #f4e4f7;
   --chip-papers-bg: #e3ebea;
   --chip-news-bg: var(--brand-pale-pink);
+  --chip-weekly-bg: #e8ebf4;
 
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -65,10 +67,12 @@
     --chip-newsletter: #d69fe8;
     --chip-papers: #9ec2c0;
     --chip-news: #e8a0a3;
+    --chip-weekly: #b3bdd8;
     --chip-legislative-bg: #3a1f21;
     --chip-newsletter-bg: #2e1434;
     --chip-papers-bg: #163230;
     --chip-news-bg: #3a1f21;
+    --chip-weekly-bg: #222a3e;
   }
 }
 
@@ -86,10 +90,12 @@
   --chip-newsletter: #d69fe8;
   --chip-papers: #9ec2c0;
   --chip-news: #e8a0a3;
+  --chip-weekly: #b3bdd8;
   --chip-legislative-bg: #3a1f21;
   --chip-newsletter-bg: #2e1434;
   --chip-papers-bg: #163230;
   --chip-news-bg: #3a1f21;
+  --chip-weekly-bg: #222a3e;
 }
 
 /* ---------- reset ---------- */
@@ -210,12 +216,16 @@ nav, .chip, .chrome, .filter-chips, .footer, button, input, select, textarea,
 .prose h2.section--act-now::before  { background: #bc4b51; }
 .prose h2.section--radar::before    { background: #b88b3a; }
 .prose h2.section--pipeline::before { background: #5b7b7a; }
+.prose h2.section--coverage::before { background: var(--brand-purple); }
+.prose h2.section--research::before { background: var(--brand-teal); }
 .prose h2.section--events::before,
 .prose h2.section--editorial::before,
 .prose h2.section--papers::before,
 .prose h2.section--deep-dives::before,
 .prose h2.section--themes::before,
-.prose h2.section--quiet::before {
+.prose h2.section--quiet::before,
+.prose h2.section--need-to-know::before,
+.prose h2.section--best-of-rest::before {
   background: var(--brand-blue);
 }
 .prose hr {
@@ -459,6 +469,11 @@ nav, .chip, .chrome, .filter-chips, .footer, button, input, select, textarea,
   color: var(--chip-news);
   background: var(--chip-news-bg);
   border-color: color-mix(in srgb, var(--chip-news) 25%, transparent);
+}
+.chip--weekly {
+  color: var(--chip-weekly);
+  background: var(--chip-weekly-bg);
+  border-color: color-mix(in srgb, var(--chip-weekly) 25%, transparent);
 }
 
 /* ---------- filter chips ---------- */
