@@ -1,5 +1,9 @@
 # Newsletter Digest Routine
 
+> **Retired (2026-06-02).** Folded into the consolidated [weekly digest](../weekly-digest/).
+> The live routine no longer runs this prompt; it is kept for history, and the
+> `newsletter-digest.md` archive still renders on the site.
+
 ## What this produces
 
 A weekly structured digest summarising the 1–3 most frontier-AI-risk-relevant items from each core policy newsletter SaferAI tracks — with cross-newsletter deduplication and a short themes section.

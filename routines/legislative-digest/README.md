@@ -1,5 +1,9 @@
 # Legislative Digest Routine
 
+> **Retired (2026-06-02).** Folded into the consolidated [weekly digest](../weekly-digest/).
+> The live routine no longer runs this prompt; it is kept for history, and the
+> `legislative-digest.md` archive still renders on the site.
+
 ## What this produces
 
 A weekly structured digest of AI and digital-governance developments across the EU, UK, G7, OECD, UN, and Council of Europe — framed around SaferAI's frontier-AI risk management agenda.
