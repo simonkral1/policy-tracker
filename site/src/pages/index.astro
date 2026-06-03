@@ -10,11 +10,12 @@ function withBase(path: string): string {
   return `${b}${p}` || "/";
 }
 
-const [legislative, newsletter, papers, news] = await Promise.all([
+const [legislative, newsletter, papers, news, weekly] = await Promise.all([
   getCollection("legislative"),
   getCollection("newsletter"),
   getCollection("papers"),
   getCollection("news"),
+  getCollection("weekly"),
 ]);
 
 function byDateDesc<T extends { data: { date: Date } }>(a: T, b: T): number {
@@ -25,58 +26,91 @@ const sortedLegislative = [...legislative].sort(byDateDesc);
 const sortedNewsletter = [...newsletter].sort(byDateDesc);
 const sortedPapers = [...papers].sort(byDateDesc);
 const sortedNews = [...news].sort(byDateDesc);
+const sortedWeekly = [...weekly].sort(byDateDesc);
 
 const latestLegislative = sortedLegislative[0];
 const latestNewsletter = sortedNewsletter[0];
 const latestPapers = sortedPapers[0];
 const latestNews = sortedNews[0];
+const latestWeekly = sortedWeekly[0];
 
-// Pull up to three item titles from the most recent legislative digest.
-// Preference order: ACT NOW → ON THE RADAR → PIPELINE WATCH. Stops at 3.
+const itemCleanup = (s: string): string =>
+  s
+    .replace(/\[[^\]]*\]\([^)]*\)/g, "") // drop links entirely (trailing source labels are noise in the hero)
+    .replace(/[🔴🟡🟢📅💡📚📖🔗🔇🆕🔑🌐📄⚡]/gu, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\bNEW\b/g, "")
+    .replace(/\(follow-up[^)]*\)/gi, "")
+    .replace(/\(was:[^)]*\)/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function sliceSection(body: string, headingRe: RegExp): string | null {
+  const parts = body.split(headingRe);
+  if (parts.length < 2) return null;
+  const after = parts[1];
+  const nextHeadingIdx = after.search(/^##\s+/m);
+  return nextHeadingIdx === -1 ? after : after.slice(0, nextHeadingIdx);
+}
+
+// Pull up to three headline items for the hero. For the weekly digest, prefer
+// the NEED TO KNOW bullets (the digest's own tl;dr); otherwise fall back to the
+// ACT NOW → ON THE RADAR → PIPELINE ### items (legislative-style digests).
 function extractTopThree(
-  entry: CollectionEntry<"legislative"> | undefined,
+  entry:
+    | CollectionEntry<"weekly">
+    | CollectionEntry<"legislative">
+    | undefined,
 ): string[] {
   if (!entry?.body) return [];
-
   const body = entry.body;
+  const titles: string[] = [];
+
+  const needToKnow = sliceSection(body, /^##\s*(?:🔑\s*)?NEED\s*TO\s*KNOW\s*$/im);
+  if (needToKnow) {
+    const bulletRe = /^\s*[-*]\s+(.+?)\s*$/gm;
+    let m: RegExpExecArray | null;
+    while ((m = bulletRe.exec(needToKnow)) !== null && titles.length < 3) {
+      const cleaned = itemCleanup(m[1]);
+      if (cleaned) titles.push(cleaned);
+    }
+    if (titles.length > 0) return titles;
+  }
+
   const sectionOrder: RegExp[] = [
     /^##\s*(?:🔴\s*)?ACT\s*NOW\s*$/im,
     /^##\s*(?:🟡\s*)?ON\s*THE\s*RADAR\s*$/im,
-    /^##\s*(?:🟢\s*)?PIPELINE\s*WATCH\s*$/im,
+    /^##\s*(?:🟢\s*)?PIPELINE(?:\s*WATCH)?\s*$/im,
   ];
-
-  const titles: string[] = [];
   for (const re of sectionOrder) {
     if (titles.length >= 3) break;
-    const parts = body.split(re);
-    if (parts.length < 2) continue;
-    const after = parts[1];
-    const nextHeadingIdx = after.search(/^##\s+/m);
-    const section = nextHeadingIdx === -1 ? after : after.slice(0, nextHeadingIdx);
+    const section = sliceSection(body, re);
+    if (!section) continue;
     const headingRe = /^###\s+(.+?)\s*$/gm;
     let m: RegExpExecArray | null;
     while ((m = headingRe.exec(section)) !== null && titles.length < 3) {
-      titles.push(
-        m[1]
-          .replace(/[🔴🟡🟢📅💡📚📖🔗🔇🆕]/gu, "")
-          .replace(/\bNEW\b/g, "")
-          .replace(/\(follow-up[^)]*\)/gi, "")
-          .replace(/\(was:[^)]*\)/gi, "")
-          .replace(/\s+/g, " ")
-          .trim(),
-      );
+      titles.push(itemCleanup(m[1]));
     }
   }
   return titles;
 }
 
-const topThree = extractTopThree(latestLegislative);
-const fallbackNote = latestLegislative?.data.editor_note ?? null;
-const hasAnyDigest = Boolean(latestLegislative || latestNewsletter || latestPapers || latestNews);
+const heroEntry = latestWeekly ?? latestLegislative;
+const topThree = extractTopThree(heroEntry);
+const fallbackNote = heroEntry?.data.editor_note ?? null;
+const hasAnyDigest = Boolean(
+  latestWeekly || latestLegislative || latestNewsletter || latestPapers || latestNews,
+);
 
 const latestCards = (
-  [latestLegislative, latestNewsletter, latestPapers, latestNews].filter(Boolean) as Array<
-    CollectionEntry<"legislative"> | CollectionEntry<"newsletter"> | CollectionEntry<"papers"> | CollectionEntry<"news">
+  [latestWeekly, latestLegislative, latestNewsletter, latestPapers, latestNews].filter(
+    Boolean,
+  ) as Array<
+    | CollectionEntry<"weekly">
+    | CollectionEntry<"legislative">
+    | CollectionEntry<"newsletter">
+    | CollectionEntry<"papers">
+    | CollectionEntry<"news">
   >
 ).sort(byDateDesc);
 ---

@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 
-type DigestType = "legislative" | "newsletter" | "papers" | "news";
+type DigestType = "legislative" | "newsletter" | "papers" | "news" | "weekly";
 
 interface DigestSummary {
   file: string;
@@ -29,6 +29,7 @@ interface SlackResponse {
 }
 
 const TYPE_LABEL: Record<DigestType, string> = {
+  weekly: "Weekly",
   legislative: "Legislative",
   newsletter: "Newsletter",
   papers: "Papers",
@@ -36,10 +37,11 @@ const TYPE_LABEL: Record<DigestType, string> = {
 };
 
 const TYPE_ORDER: Record<DigestType, number> = {
-  legislative: 0,
-  newsletter: 1,
-  papers: 2,
-  news: 3,
+  weekly: 0,
+  legislative: 1,
+  newsletter: 2,
+  papers: 3,
+  news: 4,
 };
 
 const REPO_ROOT = path.resolve(import.meta.dir, "..");
@@ -160,7 +162,8 @@ async function loadDigest(file: string): Promise<DigestSummary | null> {
     (type !== "legislative" &&
       type !== "newsletter" &&
       type !== "papers" &&
-      type !== "news") ||
+      type !== "news" &&
+      type !== "weekly") ||
     typeof title !== "string" ||
     !date
   ) {

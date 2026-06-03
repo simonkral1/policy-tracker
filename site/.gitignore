@@ -7,6 +7,10 @@ dist/
 src/content/legislative/
 src/content/newsletter/
 src/content/papers/
+src/content/news/
+src/content/weekly/
 !src/content/legislative/.gitkeep
 !src/content/newsletter/.gitkeep
 !src/content/papers/.gitkeep
+!src/content/news/.gitkeep
+!src/content/weekly/.gitkeep

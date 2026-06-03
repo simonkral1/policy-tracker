@@ -9,9 +9,13 @@ import { visit } from "unist-util-visit";
 // Section-emoji → class marker. The emoji is stripped; the class is added
 // to the heading's hProperties so it survives remark→rehype.
 const SECTION_CLASS = {
+  "🔑": "section--need-to-know",
   "🔴": "section--act-now",
   "🟡": "section--radar",
   "🟢": "section--pipeline",
+  "🌐": "section--coverage",
+  "📄": "section--research",
+  "⚡": "section--best-of-rest",
   "📅": "section--events",
   "💡": "section--editorial",
   "📚": "section--papers",
@@ -23,7 +27,7 @@ const SECTION_CLASS = {
 // Decorative emojis we strip from text content (including inside headings,
 // after the class tagging has already happened).
 const DECORATIVE = [
-  "🔴", "🟡", "🟢", "📅", "💡", "📚", "📖", "🔗", "🔇", "🆕",
+  "🔑", "🔴", "🟡", "🟢", "🌐", "📄", "⚡", "📅", "💡", "📚", "📖", "🔗", "🔇", "🆕",
   "⚠️", "✅", "❌", "🗒️", "🔧", "📋", "🗣️", "🔄", "📃",
 ];
 

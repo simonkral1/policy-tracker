@@ -1,6 +1,6 @@
 ---
 interface Props {
-  type: "legislative" | "newsletter" | "papers" | "news";
+  type: "legislative" | "newsletter" | "papers" | "news" | "weekly";
 }
 const { type } = Astro.props;
 
@@ -9,6 +9,7 @@ const labels: Record<Props["type"], string> = {
   newsletter: "Newsletter",
   papers: "Papers",
   news: "News",
+  weekly: "Weekly",
 };
 ---
 

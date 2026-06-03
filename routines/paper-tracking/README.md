@@ -1,5 +1,9 @@
 # Paper Tracking Routine
 
+> **Retired (2026-06-02).** Folded into the consolidated [weekly digest](../weekly-digest/).
+> The live routine no longer runs this prompt; it is kept for history, and the
+> `paper-tracking.md` archive still renders on the site.
+
 ## What this produces
 
 A fortnightly (14-day window) digest of research papers most likely to change how SaferAI thinks about frontier-AI risk management — ranked by relevance, with deep-dive treatments for the highest-ranked items.

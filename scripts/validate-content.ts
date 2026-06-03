@@ -3,12 +3,12 @@
  * validate-content.ts
  *
  * Walks `content/YYYY-MM-DD/` directories and validates every `*.md` digest:
- *   - frontmatter has date (ISO), type (legislative|newsletter|papers|news), non-empty title
+ *   - frontmatter has date (ISO), type (legislative|newsletter|papers|news|weekly), non-empty title
  *   - optional period_start / period_end are ISO, sources_cited is a number, editor_note is a string
  *   - directory name matches frontmatter date
- *   - filename matches type (legislative-digest.md, newsletter-digest.md, paper-tracking.md, news-updates.md)
+ *   - filename matches type (legislative-digest.md, newsletter-digest.md, paper-tracking.md, news-updates.md, weekly-digest.md)
  *   - body ≥ 50 stripped chars
- *   - legislative digests contain all five required section headings
+ *   - legislative digests contain all five required section headings; weekly digests contain the two anchor headings
  *
  * Exit codes:
  *   0 — clean
@@ -45,6 +45,7 @@ const TYPE_TO_FILENAME: Record<string, string> = {
   newsletter: "newsletter-digest.md",
   papers: "paper-tracking.md",
   news: "news-updates.md",
+  weekly: "weekly-digest.md",
 };
 
 const VALID_TYPES = new Set(Object.keys(TYPE_TO_FILENAME));
@@ -56,6 +57,11 @@ const LEGISLATIVE_REQUIRED_HEADINGS = [
   "📅 EVENTS & HEARINGS",
   "💡 EDITORIAL NOTE",
 ];
+
+// The consolidated weekly digest. Only the two structural anchors are required
+// so the validator catches malformed output without being brittle about the
+// optional middle sections (which collapse to one line on empty weeks).
+const WEEKLY_REQUIRED_HEADINGS = ["🔑 NEED TO KNOW", "💡 EDITORIAL"];
 
 const DATE_DIR_RE = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T.*)?$/;
@@ -135,7 +141,7 @@ async function validateMarkdownFile(
   const typeVal = fm.type;
   if (typeof typeVal !== "string" || !VALID_TYPES.has(typeVal)) {
     errors.push(
-      `frontmatter.type must be one of legislative|newsletter|papers|news (got: ${String(typeVal)})`,
+      `frontmatter.type must be one of legislative|newsletter|papers|news|weekly (got: ${String(typeVal)})`,
     );
   } else {
     const expected = TYPE_TO_FILENAME[typeVal];
@@ -202,6 +208,15 @@ async function validateMarkdownFile(
     for (const heading of LEGISLATIVE_REQUIRED_HEADINGS) {
       if (!body.includes(heading)) {
         errors.push(`legislative digest missing required heading: ${heading}`);
+      }
+    }
+  }
+
+  // weekly-specific headings
+  if (typeVal === "weekly") {
+    for (const heading of WEEKLY_REQUIRED_HEADINGS) {
+      if (!body.includes(heading)) {
+        errors.push(`weekly digest missing required heading: ${heading}`);
       }
     }
   }

@@ -153,6 +153,7 @@ jobs:
               ["newsletter-digest.md", "newsletter digest"],
               ["paper-tracking.md", "paper tracking digest"],
               ["news-updates.md", "news updates"],
+              ["weekly-digest.md", "weekly digest"],
             ]);
 
             function stripQuotes(value) {

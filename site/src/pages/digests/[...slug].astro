@@ -7,17 +7,19 @@ type AnyDigest =
   | CollectionEntry<"legislative">
   | CollectionEntry<"newsletter">
   | CollectionEntry<"papers">
-  | CollectionEntry<"news">;
+  | CollectionEntry<"news">
+  | CollectionEntry<"weekly">;
 
 export async function getStaticPaths() {
-  const [legislative, newsletter, papers, news] = await Promise.all([
+  const [legislative, newsletter, papers, news, weekly] = await Promise.all([
     getCollection("legislative"),
     getCollection("newsletter"),
     getCollection("papers"),
     getCollection("news"),
+    getCollection("weekly"),
   ]);
 
-  const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news];
+  const all: AnyDigest[] = [...legislative, ...newsletter, ...papers, ...news, ...weekly];
 
   return all.map((entry) => ({
     params: { slug: `${entry.data.type}/${entry.id}` },
