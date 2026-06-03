@@ -13,6 +13,12 @@ permissions:
   contents: write
   pull-requests: write
 
+# Serialise runs so a push-triggered run and a scheduled run can't race the
+# same branch into two PRs / two merges / two notifications.
+concurrency:
+  group: ensure-routine-pr
+  cancel-in-progress: false
+
 jobs:
   discover:
     name: discover Routine branches needing action
@@ -304,13 +310,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run deploy-pages.yml --ref main
 
+      # The single send path. This step is the ONLY automatic dispatcher of the
+      # digest workflows; gated by the on/off var so disabling it stops sends.
       - name: Dispatch Slack digest
+        if: vars.POLICY_TRACKER_SLACK_ENABLED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DIGEST_FILE: ${{ steps.pr.outputs.digest_file }}
         run: gh workflow run slack-digest.yml --ref main -f files="${DIGEST_FILE}" -f dry_run=false
 
       - name: Dispatch email digest
+        if: vars.POLICY_TRACKER_EMAIL_ENABLED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DIGEST_FILE: ${{ steps.pr.outputs.digest_file }}

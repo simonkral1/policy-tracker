@@ -7,9 +7,8 @@ on:
       - "site/**"
       - "content/**"
       - "sources/**"
-  workflow_run:
-    workflows: [auto-merge]
-    types: [completed]
+  # Routine (bot) merges don't fire `push`, so ensure-routine-pr dispatches this
+  # workflow explicitly after it merges. (auto-merge.yml has been removed.)
   workflow_dispatch:
 
 permissions:
@@ -25,11 +24,6 @@ concurrency:
 jobs:
   build-and-deploy:
     name: build-and-deploy
-    # For workflow_run triggers, only run when the upstream auto-merge succeeded.
-    # Other triggers (push, workflow_dispatch) always run.
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

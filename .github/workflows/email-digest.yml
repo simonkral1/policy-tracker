@@ -1,10 +1,8 @@
 name: email-digest
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "content/**"
+  # Single send path: dispatched only — by ensure-routine-pr after it merges a
+  # digest, or manually. No push or workflow_run trigger, so no duplicate sends.
   workflow_dispatch:
     inputs:
       files:
